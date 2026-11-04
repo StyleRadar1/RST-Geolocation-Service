@@ -102,7 +102,7 @@ Desarrollado y mantenido por el **Equipo `Restrepo`** (prefijo `RST`) para la as
 | :---: | :---: | :---: |
 | **Líder y apoyo** | `Juan Nicolás Álvarez Muñoz` | [@JUANNICOLASA](https://github.com/JUANNICOLASA) |
 | **Backend Developer** | `Sebastián Camilo Granados` | [@Sebastian-Granados1456](https://github.com/Sebastian-Granados1456) |
-| **Frontend Developer** | `Carlos Sánchez` | `Pendiente` |
+| **Frontend Developer** | `Carlos Sánchez` | [@Carlossj8](https://github.com/Carlossj8) |
 
 </div>
 
@@ -420,7 +420,10 @@ Las pruebas unitarias validan el dominio y los casos de uso, y las de integraci�
           <strong><font color="#5600EF" size="3">REPORTE CONSOLIDADO DE COBERTURA JACOCO (≥ 85%)</font></strong>
         </p>
         <p>
-<!-- <img src="docs/evidencias/cobertura-jacoco.png" width="100%" alt="Reporte JaCoCo" /><br /> -->
+<em>Evidencia pendiente; el reporte se adjunta cuando el servicio tenga casos de uso implementados.</em>
+        </p>
+      </td>
+    </tr>
   </table>
 </div>
 
