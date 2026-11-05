@@ -13,7 +13,7 @@ import java.util.Map;
 public class HealthController implements HealthApi {
 
     static final String SERVICE = "ms-geolocalizacion";
-    static final int PORT = 8086;
+    static final int PORT = 8240;
 
     @Override
     @GetMapping
