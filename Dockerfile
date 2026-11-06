@@ -10,5 +10,5 @@ RUN addgroup -S app && adduser -S app -G app
 WORKDIR /app
 COPY --from=build --chown=app:app /build/target/ms-geolocalizacion-0.0.1-SNAPSHOT.jar app.jar
 USER app
-EXPOSE 8086
+EXPOSE 8240
 ENTRYPOINT ["java", "-jar", "app.jar"]
