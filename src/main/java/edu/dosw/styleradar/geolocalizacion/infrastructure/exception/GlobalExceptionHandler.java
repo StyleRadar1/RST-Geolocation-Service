@@ -5,6 +5,8 @@ import edu.dosw.styleradar.geolocalizacion.domain.exception.ResourceNotFoundExce
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -32,6 +34,11 @@ public class GlobalExceptionHandler {
         ProblemDetail detail = problem(HttpStatus.BAD_REQUEST, "Solicitud inválida", "La solicitud tiene campos inválidos");
         detail.setProperty("errors", errors);
         return detail;
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class})
+    public ProblemDetail handleBadParameter(Exception ex) {
+        return problem(HttpStatus.BAD_REQUEST, "Solicitud inválida", "Falta un parámetro o tiene un formato inválido");
     }
 
     @ExceptionHandler(Exception.class)
