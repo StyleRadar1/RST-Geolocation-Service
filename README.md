@@ -8,7 +8,7 @@
 
   <p align="center">
     <img src="https://img.shields.io/badge/BOUNDED_CONTEXT-Geolocalizacion-12063A?style=for-the-badge" alt="Context" />
-    <img src="https://img.shields.io/badge/PUERTO_OFICIAL-8086-5600EF?style=for-the-badge" alt="Port" />
+    <img src="https://img.shields.io/badge/PUERTO_OFICIAL-8240-5600EF?style=for-the-badge" alt="Port" />
     <img src="https://img.shields.io/badge/ARQUITECTURA-HEXAGONAL-16A34A?style=for-the-badge" alt="Hexagonal" />
   </p>
 
@@ -63,7 +63,7 @@
 
 * **Identificador de Servicio:** `ms-geolocalizacion`
 * **Paquete Arquitectónico:** `Paquete 2: Catálogo`
-* **Puerto de Escucha Oficial:** `8086`
+* **Puerto de Escucha Oficial:** `8240`
 * **Base de Datos Asignada:** `PostgreSQL 15.8` (`styleradar_geolocation`), aislada bajo el patrón *Database-per-Service*.
 * **Bounded Context:** `Geolocalización`
 
@@ -74,8 +74,8 @@ Este microservicio encapsula exclusivamente la lógica de negocio de mapa y geol
 | Qué HACE este Microservicio (Alcance)                             | Qué NO HACE este Microservicio (Límites)                                          |
 | :----------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
 | • Ubica los almacenes aliados y las fundaciones en el mapa.       | • NO autentica usuarios.                                                           |
-| • Filtra los almacenes por categoría.                             | • NO gestiona las prendas del catálogo (delegado a `ms-item-catalogo` en `:8085`). |
-| • Calcula la distancia entre el usuario y un almacén.             | • NO gestiona el inventario por talla (delegado a `ms-inventario` en `:8084`).     |
+| • Filtra los almacenes por categoría.                             | • NO gestiona las prendas del catálogo (delegado a `ms-item-catalogo` en `:8220`). |
+| • Calcula la distancia entre el usuario y un almacén.             | • NO gestiona el inventario por talla (delegado a `ms-inventario` en `:8200`).     |
 | • Garantiza persistencia ACID e idempotencia en su base de datos. | • NO accede directamente a bases de datos de otros microservicios.                 |
 
 ### Arquetipos de Moda y Personajes de StyleRadar
@@ -277,9 +277,9 @@ src/main/java/edu/dosw/styleradar/geolocalizacion/
 | :--- | :---: | :--- | :--- | :--- | :--- |
 | **Producción (PROD)** | Próximo Sprint | Despliegue productivo de StyleRadar | Próximo Sprint | Próximo Sprint | Próximo Sprint |
 | **Calidad / Pruebas (QA)** | Próximo Sprint | Pruebas integradas del Sprint | Próximo Sprint | Próximo Sprint | Próximo Sprint |
-| **Desarrollo Local (DEV)** | Local | Entorno de desarrollo local | `http://localhost:8086/api/v1` | [Swagger UI Local](http://localhost:8086/api/v1/swagger-ui.html) | [`/health`](http://localhost:8086/api/v1/health) |
+| **Desarrollo Local (DEV)** | Local | Entorno de desarrollo local | `http://localhost:8240/api/v1` | [Swagger UI Local](http://localhost:8240/api/v1/swagger-ui.html) | [`/health`](http://localhost:8240/api/v1/health) |
 
-* **Especificación OpenAPI:** `http://localhost:8086/api/v1/v3/api-docs`
+* **Especificación OpenAPI:** `http://localhost:8240/api/v1/v3/api-docs`
 
 <div align="center">
   <table width="100%" style="margin: 18px 0; border: 2px dashed #5600EF; border-radius: 8px; background-color: #FBFBFE;">
@@ -370,7 +370,7 @@ docker compose up -d --build
 ### Comprobación de Salud (Health Check)
 
 ```bash
-curl http://localhost:8086/api/v1/health
+curl http://localhost:8240/api/v1/health
 ```
 
 <div align="center">
@@ -399,7 +399,7 @@ Las variables se definen en `.env`, que no se versiona. La plantilla `.env.examp
 
 | Variable | Descripción | Valor por Defecto |
 | :--- | :--- | :--- |
-| `SERVER_PORT` | Puerto del servicio | `8086` |
+| `SERVER_PORT` | Puerto del servicio | `8240` |
 | `DB_HOST` | Host de PostgreSQL | `localhost` |
 | `DB_PORT` | Puerto de PostgreSQL | `5432` |
 | `DB_NAME` | Nombre de la base de datos | `styleradar_geolocation` |
