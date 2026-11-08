@@ -226,6 +226,46 @@ El dominio tiene dos agregados: `Almacen` y `Fundacion`, ambos con una `Ubicacio
 
 Se usa PostgreSQL porque los almacenes y las fundaciones tienen una estructura fija y las consultas son por filtros y coordenadas. Cada agregado se guarda en su propia tabla y la ubicación se almacena como dos columnas (`latitud` y `longitud`) dentro de la misma fila, ya que es un value object. Las categorías se normalizan en `categoria_almacen`, relacionada uno a muchos con `almacen`, para filtrar por categoría sin repetir texto. La base de datos es exclusiva del servicio (*Database-per-Service*).
 
+### Diagramas de Secuencia
+
+Los diagramas muestran, para cada funcionalidad, el recorrido de la petición por las capas del servicio, tanto en el camino exitoso como en los errores. Los fragmentos `alt` y `loop` separan cada caso. Los archivos editables de draw.io están junto a las imágenes en `docs/evidencias`.
+
+<div align="center">
+  <table width="100%" style="margin: 18px 0; border: 2px dashed #C4B5FD; border-radius: 8px; background-color: #FBFBFE;">
+    <tr>
+      <td align="center" style="padding: 20px;">
+        <p>
+          <img src="https://img.shields.io/badge/DIAGRAMA-SECUENCIA-12063A?style=for-the-badge" alt="Diagrama de secuencia calcular distancia" /><br />
+          <strong><font color="#5600EF" size="3">CALCULAR DISTANCIA AL ALMACÉN</font></strong>
+        </p>
+        <p>
+          <img src="docs/evidencias/diagrama-secuencia-calcular-distancia.png" width="100%" alt="Diagrama de secuencia calcular distancia" /><br />
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+El cliente envía la ubicación del usuario. Si falta la latitud o la longitud se responde 400, y si están fuera de rango el dominio lo rechaza al crear la `Ubicacion` y se responde 422. Con coordenadas válidas, el caso de uso busca el almacén (si no existe, 404) y calcula la distancia con la fórmula de Haversine. Se responde 200 con los kilómetros (SR-RF-21).
+
+<div align="center">
+  <table width="100%" style="margin: 18px 0; border: 2px dashed #C4B5FD; border-radius: 8px; background-color: #FBFBFE;">
+    <tr>
+      <td align="center" style="padding: 20px;">
+        <p>
+          <img src="https://img.shields.io/badge/DIAGRAMA-SECUENCIA-12063A?style=for-the-badge" alt="Diagrama de secuencia fundaciones cercanas" /><br />
+          <strong><font color="#5600EF" size="3">CONSULTAR FUNDACIONES CERCANAS</font></strong>
+        </p>
+        <p>
+          <img src="docs/evidencias/diagrama-secuencia-fundaciones-cercanas.png" width="100%" alt="Diagrama de secuencia fundaciones cercanas" /><br />
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+Con la ubicación del usuario y un radio en kilómetros (5 por defecto), el caso de uso trae las fundaciones y en el `loop` revisa una por una si está dentro del radio. Se responde 200 con las fundaciones cercanas. Si falta un parámetro se responde 400, y si las coordenadas o el radio no son válidos se responde 422 (SR-RF-43).
+
 ### Estructura Oficial de Paquetes en `src/main/java/`
 
 ```text
