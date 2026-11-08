@@ -3,7 +3,7 @@ services:
     build: .
     container_name: ms-geolocalizacion
     ports:
-      - "${SERVER_PORT:-8086}:8086"
+      - "${SERVER_PORT:-8240}:8240"
     env_file:
       - .env
     environment:
