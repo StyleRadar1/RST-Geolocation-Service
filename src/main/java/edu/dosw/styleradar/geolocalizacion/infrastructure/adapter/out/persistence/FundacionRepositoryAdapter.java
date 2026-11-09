@@ -1,6 +1,6 @@
 package edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.persistence;
 
-import edu.dosw.styleradar.geolocalizacion.application.mapper.out.FundacionMapperOut;
+import edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.persistence.mapper.FundacionMapperOut;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Fundacion;
 import edu.dosw.styleradar.geolocalizacion.domain.port.out.FundacionRepositoryPort;
 import edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.persistence.repository.FundacionJpaRepository;

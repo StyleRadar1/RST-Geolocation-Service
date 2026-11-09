@@ -1,4 +1,4 @@
-package edu.dosw.styleradar.geolocalizacion.application.mapper.out;
+package edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.persistence.mapper;
 
 import edu.dosw.styleradar.geolocalizacion.domain.model.Fundacion;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Ubicacion;

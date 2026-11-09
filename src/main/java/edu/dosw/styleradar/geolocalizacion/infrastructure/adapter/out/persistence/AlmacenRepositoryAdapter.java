@@ -1,6 +1,6 @@
 package edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.persistence;
 
-import edu.dosw.styleradar.geolocalizacion.application.mapper.out.AlmacenMapperOut;
+import edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.persistence.mapper.AlmacenMapperOut;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Almacen;
 import edu.dosw.styleradar.geolocalizacion.domain.port.out.AlmacenRepositoryPort;
 import edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.persistence.repository.AlmacenJpaRepository;
