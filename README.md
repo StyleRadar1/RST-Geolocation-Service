@@ -339,9 +339,12 @@ src/main/java/edu/dosw/styleradar/geolocalizacion/
 
 ### Tabla de Endpoints Expuestos
 
-|  Método  | Endpoint          | Descripción         | Rol Requerido | Códigos HTTP |
-| :------: | :---------------- | :------------------ | :------------ | :----------: |
-|  `GET`   | `/api/v1/health`  | Estado del servicio | Público       |    `200`     |
+| Método | Endpoint | Descripción | Rol Requerido | Códigos HTTP |
+| :---: | :--- | :--- | :--- | :---: |
+| `GET` | `/api/v1/almacenes` | Listar los almacenes aliados con su ubicación; con `categoriaId` opcional filtra por categoría (SR-RF-17 y 18) | Público | `200`, `400` |
+| `GET` | `/api/v1/almacenes/{id}/distancia` | Calcular en kilómetros la distancia entre la ubicación del usuario (`lat`, `lng`) y el almacén (SR-RF-21) | Público | `200`, `400`, `404`, `422` |
+| `GET` | `/api/v1/fundaciones/cercanas` | Consultar las fundaciones aliadas a menos de `radioKm` (por defecto 5) de la ubicación `lat`, `lng` (SR-RF-43) | Público | `200`, `400`, `422` |
+| `GET` | `/api/v1/health` | Estado del servicio | Público | `200` |
 
 ---
 
