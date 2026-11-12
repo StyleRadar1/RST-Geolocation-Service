@@ -58,13 +58,15 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME_PROD }}
           DB_USER: ${{ secrets.DB_USER_PROD }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD_PROD }}
+          CORS_ALLOWED_ORIGINS: ${{ secrets.CORS_ALLOWED_ORIGINS_PROD }}
         with:
           inlineScript: |
             RG=$(az webapp list --query "[?name=='${AZURE_WEBAPP_NAME}'].resourceGroup | [0]" -o tsv)
             az webapp config appsettings set --name "$AZURE_WEBAPP_NAME" --resource-group "$RG" --output none --settings \
               WEBSITES_PORT=8240 SERVER_PORT=8240 SPRING_PROFILES_ACTIVE=prod \
               SPRING_DATASOURCE_URL="jdbc:postgresql://${DB_HOST}:${DB_PORT:-5432}/${DB_NAME}?sslmode=require" \
-              DB_USER="$DB_USER" DB_PASSWORD="$DB_PASSWORD"
+              DB_USER="$DB_USER" DB_PASSWORD="$DB_PASSWORD" \
+              CORS_ALLOWED_ORIGINS="${CORS_ALLOWED_ORIGINS:-http://localhost:5173}"
             az webapp config container set --name "$AZURE_WEBAPP_NAME" --resource-group "$RG" --output none \
               --container-image-name "${DOCKERHUB_NAMESPACE}/ms-geolocalizacion:prod-${GITHUB_SHA}" \
               --container-registry-url "https://index.docker.io/v1"
