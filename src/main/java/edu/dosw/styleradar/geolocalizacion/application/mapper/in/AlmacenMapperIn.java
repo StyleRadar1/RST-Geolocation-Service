@@ -18,7 +18,6 @@ public final class AlmacenMapperIn {
                 almacen.ubicacion().latitud(), almacen.ubicacion().longitud());
     }
 
-    // Redondea a dos decimales
     public static DistanciaResponse toResponse(UUID almacenId, Distancia distancia) {
         return new DistanciaResponse(almacenId, Math.round(distancia.kilometros() * 100) / 100.0);
     }

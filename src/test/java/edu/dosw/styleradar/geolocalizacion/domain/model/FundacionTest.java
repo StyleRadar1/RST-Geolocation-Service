@@ -10,7 +10,7 @@ class FundacionTest {
 
     @Test
     void estaCercaSiEstaDentroDelRadio() {
-        // Arrange: la fundación queda a unos 111 km del usuario
+        // Arrange
         Fundacion fundacion = new Fundacion(UUID.randomUUID(), "Ropa Solidaria", new Ubicacion(0, 1));
         Ubicacion usuario = new Ubicacion(0, 0);
 

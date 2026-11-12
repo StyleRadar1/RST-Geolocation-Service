@@ -64,7 +64,7 @@
 * **Identificador de Servicio:** `ms-geolocalizacion`
 * **Paquete Arquitectónico:** `Paquete 2: Catálogo`
 * **Puerto de Escucha Oficial:** `8240`
-* **Base de Datos Asignada:** `PostgreSQL 16.4` (`styleradar_geolocation`), aislada bajo el patrón *Database-per-Service*.
+* **Base de Datos Asignada:** `PostgreSQL 16` (`styleradar_geolocation`), aislada bajo el patrón *Database-per-Service*.
 * **Bounded Context:** `Geolocalización`
 
 ### Responsabilidades del Dominio
@@ -364,7 +364,7 @@ Este servicio no usa el broker de mensajería: no publica ni consume eventos. Se
 | :--- | :--- | :--- |
 | **Lenguaje Core** | Java | `21` |
 | **Framework** | Spring Boot | `3.3.4` |
-| **Base de Datos** | PostgreSQL | `16.4` |
+| **Base de Datos** | PostgreSQL | `16` |
 | **Migraciones de BD** | Flyway | Gestionada por Spring Boot |
 | **Mapeo de DTOs** | MapStruct | `1.5.5.Final` |
 | **Documentación API** | springdoc-openapi | `2.6.0` |
