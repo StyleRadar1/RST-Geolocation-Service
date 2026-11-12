@@ -286,6 +286,45 @@ El cliente envía la ubicación del usuario. Si falta la latitud o la longitud s
 
 Con la ubicación del usuario y un radio en kilómetros (5 por defecto), el caso de uso trae las fundaciones y en el `loop` revisa una por una si está dentro del radio. Se responde 200 con las fundaciones cercanas. Si falta un parámetro se responde 400, y si las coordenadas o el radio no son válidos se responde 422 (SR-RF-43).
 
+### Diagramas de Flujo
+
+Los diagramas de flujo muestran el recorrido del usuario por las pantallas de StyleRadar y los microservicios del paquete que intervienen en cada paso. Los archivos editables de Excalidraw están junto a las imágenes en `docs/evidencias`.
+
+<div align="center">
+  <table width="100%" style="margin: 18px 0; border: 2px dashed #C4B5FD; border-radius: 8px; background-color: #FBFBFE;">
+    <tr>
+      <td align="center" style="padding: 20px;">
+        <p>
+          <img src="https://img.shields.io/badge/DIAGRAMA-FLUJO-12063A?style=for-the-badge" alt="Diagrama de flujo de búsqueda de prendas y playlists" /><br />
+          <strong><font color="#5600EF" size="3">BÚSQUEDA DE PRENDAS Y PLAYLISTS</font></strong>
+        </p>
+        <p>
+          <img src="docs/evidencias/flujo-busqueda-playlists.png" width="100%" alt="Diagrama de flujo de búsqueda de prendas y playlists" /><br />
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+El usuario busca y filtra prendas por tipo, color, talla o precio, y puede ordenar los resultados por distancia. ms-item-catalogo consulta a ms-inventario las prendas con unidades en la talla pedida y a ms-geolocalizacion la distancia a cada almacén. El usuario guarda una prenda en su playlist y, si la tienda la retira, ms-item-catalogo publica `catalogo.prenda.eliminada` y ms-playlist la quita de las playlists.
+
+<div align="center">
+  <table width="100%" style="margin: 18px 0; border: 2px dashed #C4B5FD; border-radius: 8px; background-color: #FBFBFE;">
+    <tr>
+      <td align="center" style="padding: 20px;">
+        <p>
+          <img src="https://img.shields.io/badge/DIAGRAMA-FLUJO-12063A?style=for-the-badge" alt="Diagrama de flujo del mapa al catálogo de un almacén" /><br />
+          <strong><font color="#5600EF" size="3">DEL MAPA AL CATÁLOGO DE UN ALMACÉN</font></strong>
+        </p>
+        <p>
+          <img src="docs/evidencias/flujo-mapa-catalogo.png" width="100%" alt="Diagrama de flujo del mapa al catálogo de un almacén" /><br />
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+En el mapa, el usuario ve los almacenes aliados y las fundaciones cercanas con su distancia, calculada por ms-geolocalizacion, y puede filtrar por categoría. Al tocar un almacén se muestra el resumen de su catálogo y, desde Tiendas, el catálogo completo con sus novedades de la semana, que entrega ms-item-catalogo. Las tallas disponibles de cada prenda vienen de ms-inventario.
 ### Estructura Oficial de Paquetes en `src/main/java/`
 
 ```text
