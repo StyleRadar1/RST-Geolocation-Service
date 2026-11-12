@@ -8,11 +8,8 @@ services:
       - .env
     environment:
       DB_HOST: postgres
-      RABBITMQ_HOST: rabbitmq
     depends_on:
       postgres:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
 
   postgres:
@@ -27,20 +24,6 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
-      timeout: 5s
-      retries: 10
-
-  rabbitmq:
-    image: rabbitmq:3.13.7-management-alpine
-    container_name: ms-geolocalizacion-rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-    ports:
-      - "15672:15672"
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
       timeout: 5s
       retries: 10
 

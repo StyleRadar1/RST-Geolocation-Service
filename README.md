@@ -119,11 +119,9 @@ El servicio sigue la arquitectura hexagonal acordada por el curso. Las reglas de
 ```mermaid
 flowchart TD
     GW["API Gateway"]
-    BRK["RabbitMQ"]
 
     subgraph INFRA_IN["Infraestructura de Entrada (Driving Adapters)"]
         REST["Adaptador REST"]
-        AMQP_IN["Adaptador de eventos"]
     end
 
     subgraph APP["Capa de Aplicación"]
@@ -140,22 +138,17 @@ flowchart TD
 
     subgraph INFRA_OUT["Infraestructura de Salida (Driven Adapters)"]
         JPA_REPO["Adaptador de persistencia"]
-        RABBIT_PUB["Adaptador de mensajería"]
     end
 
     DB[("PostgreSQL")]
 
     GW --> REST
-    BRK --> AMQP_IN
     REST --> IN_PORT
-    AMQP_IN --> IN_PORT
     IN_PORT --> USE_CASES
     USE_CASES --> DOMAIN
     USE_CASES --> OUT_PORT
     OUT_PORT --> JPA_REPO
-    OUT_PORT --> RABBIT_PUB
     JPA_REPO --> DB
-    RABBIT_PUB --> BRK
 
     classDef domain fill:#EDE7FF,stroke:#5600EF,stroke-width:2px,color:#0C0C12;
     classDef app fill:#F8FAFC,stroke:#C4B5FD,stroke-width:2px,color:#0C0C12;
@@ -163,7 +156,7 @@ flowchart TD
 
     class DOMAIN,ENTITIES,EVENTS,EXCEPTIONS domain;
     class APP,IN_PORT,USE_CASES,OUT_PORT app;
-    class INFRA_IN,INFRA_OUT,REST,AMQP_IN,JPA_REPO,RABBIT_PUB infra;
+    class INFRA_IN,INFRA_OUT,REST,JPA_REPO infra;
 ```
 
 ### Diagrama de Componentes General del Paquete
@@ -184,7 +177,7 @@ flowchart TD
   </table>
 </div>
 
-El diagrama muestra los cuatro microservicios del paquete Catálogo y cómo se relacionan. El front entra por el API Gateway con HTTPS bajo `/api/v1`. `ms-item-catalogo` consulta por Feign a `ms-inventario` las prendas con unidades en una talla y a `ms-geolocalizacion` la distancia a cada almacén. Los eventos viajan por el exchange `styleradar.events` de RabbitMQ: ítem-catálogo publica `catalogo.prenda.creada` y `catalogo.prenda.eliminada` y consume `inventario.stock.agotado`; inventario publica `inventario.stock.agotado` e `inventario.stock.ultimas-unidades`; y playlist consume `catalogo.prenda.eliminada`. Cada servicio tiene su propia base PostgreSQL. El archivo editable está en `docs/evidencias/diagrama-componentes-general-paquete.drawio`.
+El diagrama muestra los cuatro microservicios del paquete Catálogo y cómo se relacionan. El front entra por el API Gateway con HTTPS bajo `/api/v1`. `ms-item-catalogo` consulta por Feign a `ms-inventario` las prendas con unidades en una talla y a `ms-geolocalizacion` la distancia a cada almacén. Los eventos viajan por el exchange `styleradar.exchange` de RabbitMQ: ítem-catálogo publica `styleradar.catalogo.prenda.publicada`, `styleradar.catalogo.prenda.retirada` y `styleradar.catalogo.moderacion.cambiada` y consume `styleradar.inventario.actualizado` y `styleradar.inventario.stock.agotado`; inventario publica `styleradar.inventario.actualizado`, `styleradar.inventario.stock.agotado` y `styleradar.inventario.stock.ultimas-unidades`; y playlist consume `styleradar.catalogo.prenda.retirada`. Cada servicio tiene su propia base PostgreSQL. El archivo editable está en `docs/evidencias/diagrama-componentes-general-paquete.drawio`.
 
 ### Diagrama de Componentes Específico
 
@@ -306,7 +299,7 @@ Los diagramas de flujo muestran el recorrido del usuario por las pantallas de St
   </table>
 </div>
 
-El usuario busca y filtra prendas por tipo, color, talla o precio, y puede ordenar los resultados por distancia. ms-item-catalogo consulta a ms-inventario las prendas con unidades en la talla pedida y a ms-geolocalizacion la distancia a cada almacén. El usuario guarda una prenda en su playlist y, si la tienda la retira, ms-item-catalogo publica `catalogo.prenda.eliminada` y ms-playlist la quita de las playlists.
+El usuario busca y filtra prendas por tipo, color, talla o precio, y puede ordenar los resultados por distancia. ms-item-catalogo consulta a ms-inventario las prendas con unidades en la talla pedida y a ms-geolocalizacion la distancia a cada almacén. El usuario guarda una prenda en su playlist y, si la tienda la retira, ms-item-catalogo publica `styleradar.catalogo.prenda.retirada` y ms-playlist la marca como no disponible en las playlists.
 
 <div align="center">
   <table width="100%" style="margin: 18px 0; border: 2px dashed #C4B5FD; border-radius: 8px; background-color: #FBFBFE;">
@@ -411,14 +404,14 @@ src/main/java/edu/dosw/styleradar/geolocalizacion/
 
 ## <img src="https://img.shields.io/badge/05-5600EF?style=for-the-badge" height="20" align="absmiddle" /> 5. EVENTOS QUE PUBLICA Y CONSUME
 
-La comunicación asíncrona entre microservicios se realiza a través de **RabbitMQ 3.13.7**.
+Este servicio no usa el broker de mensajería: no publica ni consume eventos. Se comunica solo por HTTP: el Front (a través del API Gateway) y `ms-item-catalogo` (por Feign, para la distancia) consumen sus endpoints.
 
 ### Matriz de Eventos AMQP
 
 | Tipo | Evento | Emisor / Receptor | Propósito |
 | :---: | :--- | :--- | :--- |
-| **PUBLICA** | — | — | Por ahora el servicio no tiene eventos de este tipo. |
-| **CONSUME** | — | — | Por ahora el servicio no tiene eventos de este tipo. |
+| **PUBLICA** | — | — | No publica eventos. |
+| **CONSUME** | — | — | No consume eventos. |
 
 ---
 
@@ -432,7 +425,6 @@ La comunicación asíncrona entre microservicios se realiza a través de **Rabbi
 | **Framework** | Spring Boot | `3.3.4` |
 | **Base de Datos** | PostgreSQL | `16` |
 | **Migraciones de BD** | Flyway | Gestionada por Spring Boot |
-| **Broker de Mensajería** | RabbitMQ | `3.13.7` |
 | **Mapeo de DTOs** | MapStruct | `1.5.5.Final` |
 | **Documentación API** | springdoc-openapi | `2.6.0` |
 | **Testing Integración** | Testcontainers | Gestionada por Spring Boot |
@@ -453,7 +445,7 @@ La comunicación asíncrona entre microservicios se realiza a través de **Rabbi
 
 ### Ejecución Local con Maven (Perfil Dev)
 
-Requiere PostgreSQL y RabbitMQ disponibles en las direcciones definidas en el archivo `.env`, creado a partir de `.env.example`.
+Requiere PostgreSQL disponible en las direcciones definidas en el archivo `.env`, creado a partir de `.env.example`.
 
 ```bash
 git clone https://github.com/StyleRadar1/RST-Geolocation-Service.git
@@ -463,7 +455,7 @@ cd RST-Geolocation-Service
 
 ### Ejecución Contenerizada Completa con Docker
 
-El servicio, junto con su base de datos y RabbitMQ, se levanta con Docker a partir del archivo `.env`:
+El servicio, junto con su base de datos, se levanta con Docker a partir del archivo `.env`:
 
 ```bash
 docker compose up -d --build
@@ -507,10 +499,6 @@ Las variables se definen en `.env`, que no se versiona. La plantilla `.env.examp
 | `DB_NAME` | Nombre de la base de datos | `styleradar_geolocation` |
 | `DB_USER` | Usuario de PostgreSQL | `postgres` |
 | `DB_PASSWORD` | Contraseña de PostgreSQL | — |
-| `RABBITMQ_HOST` | Host de RabbitMQ | `localhost` |
-| `RABBITMQ_PORT` | Puerto de RabbitMQ | `5672` |
-| `RABBITMQ_USER` | Usuario de RabbitMQ | `styleradar` |
-| `RABBITMQ_PASSWORD` | Contraseña de RabbitMQ | — |
 
 ---
 
