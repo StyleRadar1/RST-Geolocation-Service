@@ -7,6 +7,5 @@ import java.util.UUID;
 
 public interface ConsultarAlmacenesUseCase {
 
-    // Con categoriaId en null devuelve todos
     List<Almacen> consultar(UUID categoriaId);
 }

@@ -15,7 +15,6 @@ public record Ubicacion(double latitud, double longitud) {
         }
     }
 
-    // Fórmula de Haversine
     public Distancia distanciaA(Ubicacion otra) {
         double dLat = Math.toRadians(otra.latitud - latitud);
         double dLon = Math.toRadians(otra.longitud - longitud);

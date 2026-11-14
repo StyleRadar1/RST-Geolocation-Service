@@ -11,7 +11,7 @@ class UbicacionTest {
 
     @Test
     void calculaLaDistanciaEntreDosPuntos() {
-        // Arrange: un grado de longitud sobre el ecuador mide unos 111.19 km
+        // Arrange
         Ubicacion origen = new Ubicacion(0, 0);
         Ubicacion destino = new Ubicacion(0, 1);
 

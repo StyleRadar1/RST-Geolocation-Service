@@ -11,7 +11,6 @@ import edu.dosw.styleradar.geolocalizacion.domain.port.out.FundacionRepositoryPo
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-// Conecta los casos de uso con sus puertos sin anotar la capa de aplicación
 @Configuration
 public class BeanConfig {
 
