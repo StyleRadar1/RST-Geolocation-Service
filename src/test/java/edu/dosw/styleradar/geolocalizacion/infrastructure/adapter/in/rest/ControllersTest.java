@@ -67,5 +67,6 @@ class ControllersTest {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).extracting(FundacionResponse::nombre).containsExactly("Abrigo Norte");
+        assertThat(response.getBody()).extracting(FundacionResponse::distanciaKm).containsExactly(0.0);
     }
 }

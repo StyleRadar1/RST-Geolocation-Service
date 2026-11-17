@@ -31,4 +31,15 @@ class ConsultarFundacionesCercanasUseCaseImplTest {
         // Assert
         assertThat(resultado).containsExactly(cerca);
     }
+
+    @Test
+    void ordenaDeLaMasCercanaALaMasLejana() {
+        Fundacion media = new Fundacion(UUID.randomUUID(), "Media", new Ubicacion(0, 0.03));
+        Fundacion cerca = new Fundacion(UUID.randomUUID(), "Cerca", new Ubicacion(0, 0.01));
+        when(repository.findAll()).thenReturn(List.of(media, cerca));
+
+        List<Fundacion> resultado = useCase.consultar(new Ubicacion(0, 0), new Distancia(5));
+
+        assertThat(resultado).containsExactly(cerca, media);
+    }
 }

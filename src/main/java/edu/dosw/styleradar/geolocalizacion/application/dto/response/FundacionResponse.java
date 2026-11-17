@@ -2,5 +2,5 @@ package edu.dosw.styleradar.geolocalizacion.application.dto.response;
 
 import java.util.UUID;
 
-public record FundacionResponse(UUID id, String nombre, double latitud, double longitud) {
+public record FundacionResponse(UUID id, String nombre, double latitud, double longitud, double distanciaKm) {
 }
