@@ -21,10 +21,41 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:}
+    virtual-host: ${RABBITMQ_VHOST:/}
+    ssl:
+      enabled: ${RABBITMQ_SSL_ENABLED:false}
+      verify-hostname: ${RABBITMQ_SSL_VERIFY_HOSTNAME:true}
+    listener:
+      simple:
+        auto-startup: ${RABBITMQ_LISTENER_ENABLED:false}
+        default-requeue-rejected: false
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000ms
+          multiplier: 2
 
 styleradar:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  rabbitmq:
+    exchange: ${RABBITMQ_EXCHANGE:styleradar.exchange}
+    dlx: ${RABBITMQ_DLX:styleradar.dlx}
+    dlq: ${RABBITMQ_DLQ:styleradar.geolocalizacion.dlq}
+    dlq-routing-key: ${RABBITMQ_DLQ_ROUTING_KEY:styleradar.geolocalizacion.error}
+    queues:
+      almacenes: ${RABBITMQ_QUEUE_ALMACENES:styleradar.geolocalizacion.almacen.q}
+      fundaciones: ${RABBITMQ_QUEUE_FUNDACIONES:styleradar.geolocalizacion.fundacion.q}
+    routing-keys:
+      almacen-registrado: ${RABBITMQ_RK_ALMACEN_REGISTRADO:styleradar.tiendas.almacen.registrado}
+      almacen-actualizado: ${RABBITMQ_RK_ALMACEN_ACTUALIZADO:styleradar.tiendas.almacen.actualizado}
+      fundacion-registrada: ${RABBITMQ_RK_FUNDACION_REGISTRADA:styleradar.tiendas.fundacion.registrada}
+      fundacion-actualizada: ${RABBITMQ_RK_FUNDACION_ACTUALIZADA:styleradar.tiendas.fundacion.actualizada}
 
 springdoc:
   api-docs:
@@ -35,6 +66,9 @@ springdoc:
     tags-sorter: alpha
 
 management:
+  health:
+    rabbit:
+      enabled: ${RABBITMQ_HEALTH_ENABLED:false}
   endpoints:
     web:
       exposure:

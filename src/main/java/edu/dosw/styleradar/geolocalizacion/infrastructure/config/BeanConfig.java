@@ -10,6 +10,8 @@ import edu.dosw.styleradar.geolocalizacion.domain.port.out.AlmacenRepositoryPort
 import edu.dosw.styleradar.geolocalizacion.domain.port.out.FundacionRepositoryPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import edu.dosw.styleradar.geolocalizacion.application.usecase.SincronizarTiendasUseCaseImpl;
+import edu.dosw.styleradar.geolocalizacion.domain.port.in.SincronizarTiendasUseCase;
 
 @Configuration
 public class BeanConfig {
@@ -22,6 +24,12 @@ public class BeanConfig {
     @Bean
     public CalcularDistanciaUseCase calcularDistanciaUseCase(AlmacenRepositoryPort almacenRepository) {
         return new CalcularDistanciaUseCaseImpl(almacenRepository);
+    }
+
+    @Bean
+    public SincronizarTiendasUseCase sincronizarTiendasUseCase(AlmacenRepositoryPort almacenRepository,
+                                                               FundacionRepositoryPort fundacionRepository) {
+        return new SincronizarTiendasUseCaseImpl(almacenRepository, fundacionRepository);
     }
 
     @Bean

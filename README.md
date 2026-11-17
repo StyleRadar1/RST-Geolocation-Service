@@ -237,7 +237,7 @@ El diagrama muestra el servicio en arquitectura hexagonal. Las peticiones llegan
   </table>
 </div>
 
-El dominio tiene dos agregados: `Almacen` y `Fundacion`, ambos con una `Ubicacion` (value object con latitud y longitud). `Ubicacion` calcula la `Distancia` hacia otra ubicación, lo que resuelve el cálculo de distancia (SR-RF-21) y la búsqueda de fundaciones cercanas (SR-RF-43). `CategoriaAlmacen` es una entidad compartida por varios almacenes y permite filtrarlos en el mapa (SR-RF-18). Las excepciones de dominio representan errores de negocio, como un almacén que no existe. Por ahora el servicio no publica eventos de dominio.
+El dominio tiene dos agregados: `Almacen` y `Fundacion`, ambos con una `Ubicacion` (value object con latitud y longitud). `Ubicacion` calcula la `Distancia` hacia otra ubicación, lo que resuelve el cálculo de distancia (SR-RF-21) y la búsqueda de fundaciones cercanas (SR-RF-43). `CategoriaAlmacen` es una entidad compartida por varios almacenes y permite filtrarlos en el mapa (SR-RF-18). Las excepciones de dominio representan errores de negocio, como un almacén que no existe. Los almacenes y fundaciones se crean o actualizan a partir de los eventos de `ms-tiendas`.
 
 ### Diagrama de Base de Datos
 
@@ -386,14 +386,26 @@ src/main/java/edu/dosw/styleradar/geolocalizacion/
 
 ## <img src="https://img.shields.io/badge/05-5600EF?style=for-the-badge" height="20" align="absmiddle" /> 5. EVENTOS QUE PUBLICA Y CONSUME
 
-Este servicio no usa el broker de mensajería: no publica ni consume eventos. Se comunica solo por HTTP: el Front (a través del API Gateway) y `ms-item-catalogo` (por Feign, para la distancia) consumen sus endpoints.
+El servicio no publica eventos. Consume por **RabbitMQ** (exchange `styleradar.exchange`) los almacenes y fundaciones que registra `ms-tiendas`, para mantener actualizados el mapa, las distancias y las fundaciones cercanas. El Front (por el API Gateway) y `ms-item-catalogo` (por Feign, para la distancia) consumen sus endpoints por HTTP.
 
 ### Matriz de Eventos AMQP
 
-| Tipo | Evento | Emisor / Receptor | Propósito |
+| Tipo | Routing key | Emisor / Receptor | Qué hace |
 | :---: | :--- | :--- | :--- |
-| **PUBLICA** | — | — | No publica eventos. |
-| **CONSUME** | — | — | No consume eventos. |
+| **CONSUME** | `styleradar.tiendas.almacen.registrado` · `.almacen.actualizado` | `ms-tiendas` &rarr; `ms-geolocalizacion` | Crea o actualiza el almacén con su nombre, categoría y ubicación. |
+| **CONSUME** | `styleradar.tiendas.fundacion.registrada` · `.fundacion.actualizada` | `ms-tiendas` &rarr; `ms-geolocalizacion` | Crea o actualiza la fundación con su nombre y ubicación. |
+
+Contenido esperado: `almacenId` o `fundacionId` (UUID), `nombre`, `categoria` (solo almacenes) y `latitud`/`longitud`. También se aceptan dentro de `data`. Si la categoría no existe se crea.
+
+### Colas y errores
+
+| Cola | Para qué |
+| :--- | :--- |
+| `styleradar.geolocalizacion.almacen.q` | Recibe los eventos de almacenes. |
+| `styleradar.geolocalizacion.fundacion.q` | Recibe los eventos de fundaciones. |
+| `styleradar.geolocalizacion.dlq` | Cola de errores: por el DLX `styleradar.dlx` llegan los eventos inválidos (sin id, nombre o ubicación válidos), tras 3 intentos. |
+
+El consumidor está apagado por defecto (`RABBITMQ_LISTENER_ENABLED=false`) hasta que el servicio tenga su usuario en el broker; se enciende por ambiente junto con `RABBITMQ_HOST`, `RABBITMQ_USER` y `RABBITMQ_PASSWORD`.
 
 ---
 
