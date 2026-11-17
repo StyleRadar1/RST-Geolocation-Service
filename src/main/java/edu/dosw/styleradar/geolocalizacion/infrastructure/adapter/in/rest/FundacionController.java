@@ -29,8 +29,9 @@ public class FundacionController implements FundacionApi {
     public ResponseEntity<List<FundacionResponse>> cercanas(@RequestParam double lat,
                                                             @RequestParam double lng,
                                                             @RequestParam(defaultValue = "5") double radioKm) {
-        return ResponseEntity.ok(consultarFundaciones.consultar(new Ubicacion(lat, lng), new Distancia(radioKm)).stream()
-                .map(FundacionMapperIn::toResponse)
+        Ubicacion usuario = new Ubicacion(lat, lng);
+        return ResponseEntity.ok(consultarFundaciones.consultar(usuario, new Distancia(radioKm)).stream()
+                .map(fundacion -> FundacionMapperIn.toResponse(fundacion, usuario))
                 .toList());
     }
 }

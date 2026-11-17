@@ -73,6 +73,7 @@ class GeolocalizacionIntegrationTest {
     void listaLasFundacionesCercanas() throws Exception {
         mockMvc.perform(get("/fundaciones/cercanas").param("lat", "4.782700").param("lng", "-74.042700"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].nombre").value("Fundación Abrigo Norte"));
+                .andExpect(jsonPath("$[0].nombre").value("Fundación Abrigo Norte"))
+                .andExpect(jsonPath("$[0].distanciaKm").isNumber());
     }
 }

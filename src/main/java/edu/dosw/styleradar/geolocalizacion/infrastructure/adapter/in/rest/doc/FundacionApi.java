@@ -13,7 +13,7 @@ import java.util.List;
 public interface FundacionApi {
 
     @Operation(summary = "Consultar fundaciones cercanas",
-            description = "Devuelve las fundaciones que están a menos de radioKm del usuario (SR-RF-43).")
+            description = "Devuelve las fundaciones que están a menos de radioKm del usuario, de la más cercana a la más lejana, con su distanciaKm (SR-RF-43).")
     @ApiResponse(responseCode = "200", description = "Fundaciones cercanas")
     @ApiResponse(responseCode = "400", description = "Faltan lat o lng, o no son números")
     @ApiResponse(responseCode = "422", description = "Ubicación o radio inválidos")

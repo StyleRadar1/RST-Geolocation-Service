@@ -48,8 +48,9 @@ class MapperInTest {
     void mapeaFundacion() {
         UUID id = UUID.randomUUID();
 
-        FundacionResponse response = FundacionMapperIn.toResponse(new Fundacion(id, "Abrigo Norte", new Ubicacion(4.78, -74.04)));
+        FundacionResponse response = FundacionMapperIn.toResponse(new Fundacion(id, "Abrigo Norte", new Ubicacion(4.78, -74.04)),
+                new Ubicacion(4.78, -74.04));
 
-        assertThat(response).isEqualTo(new FundacionResponse(id, "Abrigo Norte", 4.78, -74.04));
+        assertThat(response).isEqualTo(new FundacionResponse(id, "Abrigo Norte", 4.78, -74.04, 0.0));
     }
 }
