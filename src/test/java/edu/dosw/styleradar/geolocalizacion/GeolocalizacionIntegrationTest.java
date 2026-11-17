@@ -1,6 +1,7 @@
 package edu.dosw.styleradar.geolocalizacion;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,10 +9,14 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.hamcrest.Matchers.hasSize;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -23,22 +28,35 @@ class GeolocalizacionIntegrationTest {
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
+    @Container
+    static final RabbitMQContainer RABBIT = new RabbitMQContainer("rabbitmq:3.13.7-management-alpine");
+
+    private static final String EXCHANGE = "styleradar.exchange";
+
     @DynamicPropertySource
     static void datasource(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registry.add("spring.datasource.username", POSTGRES::getUsername);
         registry.add("spring.datasource.password", POSTGRES::getPassword);
         registry.add("spring.flyway.locations", () -> "classpath:db/migration,classpath:db/seed");
+        registry.add("spring.rabbitmq.host", RABBIT::getHost);
+        registry.add("spring.rabbitmq.port", RABBIT::getAmqpPort);
+        registry.add("spring.rabbitmq.username", RABBIT::getAdminUsername);
+        registry.add("spring.rabbitmq.password", RABBIT::getAdminPassword);
+        registry.add("spring.rabbitmq.listener.simple.auto-startup", () -> "true");
     }
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
     @Test
     void listaLosAlmacenesDeLaBase() throws Exception {
         mockMvc.perform(get("/almacenes"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$[*].nombre", hasItem("Calle 85 Store")));
     }
 
     @Test
@@ -75,5 +93,45 @@ class GeolocalizacionIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nombre").value("Fundación Abrigo Norte"))
                 .andExpect(jsonPath("$[0].distanciaKm").isNumber());
+    }
+
+    @Test
+    void guardaElAlmacenQuePublicaTiendas() throws Exception {
+        String id = "a9999999-9999-9999-9999-999999999999";
+        rabbitTemplate.convertAndSend(EXCHANGE, "styleradar.tiendas.almacen.registrado", Map.of("almacenId", id,
+                "nombre", "Almacén de prueba", "categoria", "Deportivo", "latitud", 6.2442, "longitud", -75.5812));
+
+        int estado = 404;
+        for (int i = 0; i < 50 && estado != 200; i++) {
+            Thread.sleep(100);
+            estado = mockMvc.perform(get("/almacenes/" + id + "/distancia").param("lat", "6.2442").param("lng", "-75.5812"))
+                    .andReturn().getResponse().getStatus();
+        }
+
+        assertThat(estado).isEqualTo(200);
+    }
+
+    @Test
+    void guardaLaFundacionQuePublicaTiendas() throws Exception {
+        rabbitTemplate.convertAndSend(EXCHANGE, "styleradar.tiendas.fundacion.registrada", Map.of(
+                "fundacionId", "f9999999-9999-9999-9999-999999999999", "nombre", "Ropero Medellín",
+                "latitud", 6.2442, "longitud", -75.5812));
+
+        String body = "[]";
+        for (int i = 0; i < 50 && !body.contains("Ropero"); i++) {
+            Thread.sleep(100);
+            body = mockMvc.perform(get("/fundaciones/cercanas").param("lat", "6.2442").param("lng", "-75.5812"))
+                    .andReturn().getResponse().getContentAsString();
+        }
+
+        assertThat(body).contains("Ropero");
+    }
+
+    @Test
+    void unEventoInvalidoTerminaEnLaColaDeErrores() {
+        rabbitTemplate.convertAndSend(EXCHANGE, "styleradar.tiendas.almacen.actualizado", Map.of("almacenId", "no-es-uuid"));
+
+        Object mensaje = rabbitTemplate.receiveAndConvert("styleradar.geolocalizacion.dlq", 10000);
+        assertThat(mensaje).isInstanceOf(Map.class);
     }
 }

@@ -21,4 +21,9 @@ public class FundacionRepositoryAdapter implements FundacionRepositoryPort {
     public List<Fundacion> findAll() {
         return jpaRepository.findAll().stream().map(FundacionMapperOut::toDomain).toList();
     }
+
+    @Override
+    public Fundacion save(Fundacion fundacion) {
+        return FundacionMapperOut.toDomain(jpaRepository.save(FundacionMapperOut.toEntity(fundacion)));
+    }
 }

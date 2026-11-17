@@ -7,4 +7,6 @@ import java.util.List;
 public interface FundacionRepositoryPort {
 
     List<Fundacion> findAll();
+
+    Fundacion save(Fundacion fundacion);
 }
