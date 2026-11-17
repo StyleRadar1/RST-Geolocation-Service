@@ -9,6 +9,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,6 +41,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class})
     public ProblemDetail handleBadParameter(Exception ex) {
         return problem(HttpStatus.BAD_REQUEST, "Solicitud inválida", "Falta un parámetro o tiene un formato inválido");
+    }
+
+    @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
+    public ProblemDetail handleRouteNotFound(Exception ex) {
+        return problem(HttpStatus.NOT_FOUND, "Ruta no encontrada", "El recurso o ruta solicitada no existe");
     }
 
     @ExceptionHandler(Exception.class)
