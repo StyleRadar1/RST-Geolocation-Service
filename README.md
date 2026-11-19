@@ -369,15 +369,15 @@ Se crean en todos los ambientes con la migración `V4__categorias_unificadas.sql
 * **Nota:** en QA y PROD el servicio se apaga por inactividad (Azure Container Apps), así que la primera petición puede tardar cerca de un minuto.
 ### Formato de los errores
 
-Todos los errores responden `application/problem+json` (RFC 7807) con `type`, `title`, `status`, `detail`, `instance` y `code`; en los 400 de validación se agrega `errors` con el mensaje de cada campo.
+Todos los errores responden `application/problem+json` (RFC 7807) con `type`, `title`, `status`, `detail`, `instance`, `code` y `timestamp` (ISO-8601); en los 400 de validación se agrega `errors` con el mensaje de cada campo.
 
 | HTTP | `code` | Cuándo |
 | :---: | :--- | :--- |
-| 400 | `SOLICITUD_INVALIDA` | Un campo no cumple su validación o un valor no está en su lista |
-| 400 | `FORMATO_INVALIDO` | Falta un parámetro o tiene un formato inválido |
-| 404 | `RECURSO_NO_ENCONTRADO` | El recurso no existe |
+| 400 | `PARAMETRO_INVALIDO` | Falta `lat` o `lng`, no son números, están fuera de rango en `/almacenes`, `radioKm` no es válido o `categoriaId` no es un UUID |
+| 404 | `ALMACEN_NO_ENCONTRADO` | El almacén no existe |
 | 404 | `RUTA_NO_ENCONTRADA` | La ruta no existe |
-| 422 | `REGLA_DE_NEGOCIO` | Se incumple una regla de negocio |
+| 422 | `COORDENADA_FUERA_DE_RANGO` | La latitud no está entre -90 y 90 o la longitud entre -180 y 180 |
+| 422 | `RADIO_INVALIDO` | `radioKm` es negativo en fundaciones cercanas |
 | 500 | `ERROR_INTERNO` | Error inesperado |
 
 * **Especificación OpenAPI:** `http://localhost:8240/api/v1/v3/api-docs`

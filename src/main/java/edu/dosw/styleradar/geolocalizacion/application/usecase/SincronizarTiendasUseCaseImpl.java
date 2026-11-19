@@ -25,7 +25,7 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
     public Almacen guardarAlmacen(UUID id, String nombre, String categoria, Ubicacion ubicacion) {
         validar(id, nombre, ubicacion);
         if (categoria == null || categoria.isBlank()) {
-            throw new DomainException("El almacén debe tener una categoría");
+            throw new DomainException("El almacén debe tener una categoría", "EVENTO_INVALIDO");
         }
         String nombreCategoria = categoria.trim();
         CategoriaAlmacen categoriaAlmacen = almacenRepository.findCategoriaByNombre(nombreCategoria)
@@ -41,7 +41,7 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
 
     private static void validar(UUID id, String nombre, Ubicacion ubicacion) {
         if (id == null || nombre == null || nombre.isBlank() || ubicacion == null) {
-            throw new DomainException("El evento debe traer id, nombre y ubicación");
+            throw new DomainException("El evento debe traer id, nombre y ubicación", "EVENTO_INVALIDO");
         }
     }
 }

@@ -25,7 +25,7 @@ class GlobalExceptionHandlerTest {
     @Test
     void notFoundReturns404() {
         // Arrange
-        ResourceNotFoundException ex = new ResourceNotFoundException("No existe");
+        ResourceNotFoundException ex = new ResourceNotFoundException("No existe", "ALMACEN_NO_ENCONTRADO");
 
         // Act
         ProblemDetail detail = handler.handleNotFound(ex);
@@ -99,8 +99,13 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void everyErrorHasItsCode() {
-        assertThat(handler.handleNotFound(new ResourceNotFoundException("x")).getProperties()).containsEntry("code", "RECURSO_NO_ENCONTRADO");
-        assertThat(handler.handleDomain(new DomainException("x")).getProperties()).containsEntry("code", "REGLA_DE_NEGOCIO");
+        assertThat(handler.handleNotFound(new ResourceNotFoundException("x", "ALMACEN_NO_ENCONTRADO")).getProperties()).containsEntry("code", "ALMACEN_NO_ENCONTRADO");
+        assertThat(handler.handleDomain(new DomainException("x", "MOTIVO_REQUERIDO")).getProperties()).containsEntry("code", "MOTIVO_REQUERIDO");
         assertThat(handler.handleUnexpected(new RuntimeException("x")).getProperties()).containsEntry("code", "ERROR_INTERNO");
+    }
+
+    @Test
+    void errorsIncludeTimestamp() {
+        assertThat(handler.handleUnexpected(new RuntimeException("x")).getProperties()).containsKeys("code", "timestamp");
     }
 }

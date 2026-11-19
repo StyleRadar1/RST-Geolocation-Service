@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,17 +22,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ProblemDetail handleNotFound(ResourceNotFoundException ex) {
-        return problem(HttpStatus.NOT_FOUND, "RECURSO_NO_ENCONTRADO", "Recurso no encontrado", ex.getMessage());
+        return problem(HttpStatus.NOT_FOUND, ex.getCodigo(), "Recurso no encontrado", ex.getMessage());
     }
 
     @ExceptionHandler(ParametroInvalidoException.class)
     public ProblemDetail handleParametroInvalido(ParametroInvalidoException ex) {
-        return problem(HttpStatus.BAD_REQUEST, "SOLICITUD_INVALIDA", "Solicitud inválida", ex.getMessage());
+        return problem(HttpStatus.BAD_REQUEST, ex.getCodigo(), "Solicitud inválida", ex.getMessage());
     }
 
     @ExceptionHandler(DomainException.class)
     public ProblemDetail handleDomain(DomainException ex) {
-        return problem(HttpStatus.UNPROCESSABLE_ENTITY, "REGLA_DE_NEGOCIO", "Regla de negocio incumplida", ex.getMessage());
+        return problem(HttpStatus.UNPROCESSABLE_ENTITY, ex.getCodigo(), "Regla de negocio incumplida", ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,14 +40,14 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new LinkedHashMap<>();
         ex.getBindingResult().getFieldErrors()
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        ProblemDetail detail = problem(HttpStatus.BAD_REQUEST, "SOLICITUD_INVALIDA", "Solicitud inválida", "La solicitud tiene campos inválidos");
+        ProblemDetail detail = problem(HttpStatus.BAD_REQUEST, "DATOS_INVALIDOS", "Solicitud inválida", "La solicitud tiene campos inválidos");
         detail.setProperty("errors", errors);
         return detail;
     }
 
     @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class})
     public ProblemDetail handleBadParameter(Exception ex) {
-        return problem(HttpStatus.BAD_REQUEST, "FORMATO_INVALIDO", "Solicitud inválida", "Falta un parámetro o tiene un formato inválido");
+        return problem(HttpStatus.BAD_REQUEST, "PARAMETRO_INVALIDO", "Solicitud inválida", "Falta un parámetro o tiene un formato inválido");
     }
 
     @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
@@ -63,6 +64,7 @@ public class GlobalExceptionHandler {
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(status, message);
         detail.setTitle(title);
         detail.setProperty("code", code);
+        detail.setProperty("timestamp", OffsetDateTime.now().toString());
         return detail;
     }
 }
