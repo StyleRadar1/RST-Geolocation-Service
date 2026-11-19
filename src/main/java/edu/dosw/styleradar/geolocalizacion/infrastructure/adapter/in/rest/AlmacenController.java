@@ -2,6 +2,8 @@ package edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.in.rest;
 
 import edu.dosw.styleradar.geolocalizacion.application.dto.response.AlmacenResponse;
 import edu.dosw.styleradar.geolocalizacion.application.mapper.in.AlmacenMapperIn;
+import edu.dosw.styleradar.geolocalizacion.domain.model.Almacen;
+import edu.dosw.styleradar.geolocalizacion.domain.model.Ubicacion;
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.ConsultarAlmacenesUseCase;
 import edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.in.rest.doc.AlmacenApi;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,14 @@ public class AlmacenController implements AlmacenApi {
 
     @Override
     @GetMapping
-    public ResponseEntity<List<AlmacenResponse>> listar(@RequestParam(required = false) UUID categoriaId) {
-        return ResponseEntity.ok(consultarAlmacenes.consultar(categoriaId).stream()
-                .map(AlmacenMapperIn::toResponse)
+    public ResponseEntity<List<AlmacenResponse>> listar(@RequestParam double lat,
+                                                        @RequestParam double lng,
+                                                        @RequestParam(defaultValue = "5") double radioKm,
+                                                        @RequestParam(required = false) UUID categoriaId) {
+        List<Almacen> almacenes = consultarAlmacenes.consultar(categoriaId, lat, lng, radioKm);
+        Ubicacion usuario = new Ubicacion(lat, lng);
+        return ResponseEntity.ok(almacenes.stream()
+                .map(almacen -> AlmacenMapperIn.toResponse(almacen, usuario))
                 .toList());
     }
 }
