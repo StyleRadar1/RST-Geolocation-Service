@@ -159,6 +159,26 @@ flowchart TD
     class INFRA_IN,INFRA_OUT,REST,JPA_REPO infra;
 ```
 
+### Diagrama de Casos de Uso
+
+<div align="center">
+  <table width="100%" style="margin: 18px 0; border: 2px dashed #C4B5FD; border-radius: 8px; background-color: #FBFBFE;">
+    <tr>
+      <td align="center" style="padding: 20px;">
+        <p>
+          <img src="https://img.shields.io/badge/DIAGRAMA-CASOS%20DE%20USO-12063A?style=for-the-badge" alt="Diagrama de casos de uso" /><br />
+          <strong><font color="#5600EF" size="3">DIAGRAMA DE CASOS DE USO · MS-GEOLOCALIZACION</font></strong>
+        </p>
+        <p>
+          <img src="docs/evidencias/diagrama-casos-uso.png" width="100%" alt="Diagrama de casos de uso de ms-geolocalizacion" /><br />
+        </p>
+      </td>
+    </tr>
+  </table>
+</div>
+
+El usuario comprador ve los almacenes aliados en el mapa según su ubicación (SR-RF-17), lo que incluye calcular la distancia a cada almacén (SR-RF-21); el filtro por categoría (SR-RF-18) extiende el mapa. También consulta la distancia a un almacén puntual y las fundaciones aliadas cercanas (SR-RF-43). `ms-item-catalogo` usa el cálculo de distancia para ordenar las prendas por cercanía. Cada caso de uso lleva el código de su requerimiento en el análisis de requerimientos, los actores usan los nombres oficiales del análisis y el rectángulo marca el límite del microservicio. El archivo editable está en `docs/evidencias/diagrama-casos-uso.drawio`.
+
 ### Diagrama de Componentes General
 
 <div align="center">
