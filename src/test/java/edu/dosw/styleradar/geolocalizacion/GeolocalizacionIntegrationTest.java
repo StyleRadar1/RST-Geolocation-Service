@@ -44,6 +44,7 @@ class GeolocalizacionIntegrationTest {
         registry.add("spring.rabbitmq.username", RABBIT::getAdminUsername);
         registry.add("spring.rabbitmq.password", RABBIT::getAdminPassword);
         registry.add("spring.rabbitmq.listener.simple.auto-startup", () -> "true");
+        registry.add("tiendas.carga.habilitada", () -> "false");
     }
 
     @Autowired

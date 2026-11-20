@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,17 +22,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ProblemDetail handleNotFound(ResourceNotFoundException ex) {
-        return problem(HttpStatus.NOT_FOUND, "Recurso no encontrado", ex.getMessage());
+        return problem(HttpStatus.NOT_FOUND, ex.getCodigo(), "Recurso no encontrado", ex.getMessage());
     }
 
     @ExceptionHandler(ParametroInvalidoException.class)
     public ProblemDetail handleParametroInvalido(ParametroInvalidoException ex) {
-        return problem(HttpStatus.BAD_REQUEST, "Solicitud inválida", ex.getMessage());
+        return problem(HttpStatus.BAD_REQUEST, ex.getCodigo(), "Solicitud inválida", ex.getMessage());
     }
 
     @ExceptionHandler(DomainException.class)
     public ProblemDetail handleDomain(DomainException ex) {
-        return problem(HttpStatus.UNPROCESSABLE_ENTITY, "Regla de negocio incumplida", ex.getMessage());
+        return problem(HttpStatus.UNPROCESSABLE_ENTITY, ex.getCodigo(), "Regla de negocio incumplida", ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -39,29 +40,31 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new LinkedHashMap<>();
         ex.getBindingResult().getFieldErrors()
                 .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        ProblemDetail detail = problem(HttpStatus.BAD_REQUEST, "Solicitud inválida", "La solicitud tiene campos inválidos");
+        ProblemDetail detail = problem(HttpStatus.BAD_REQUEST, "DATOS_INVALIDOS", "Solicitud inválida", "La solicitud tiene campos inválidos");
         detail.setProperty("errors", errors);
         return detail;
     }
 
     @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class})
     public ProblemDetail handleBadParameter(Exception ex) {
-        return problem(HttpStatus.BAD_REQUEST, "Solicitud inválida", "Falta un parámetro o tiene un formato inválido");
+        return problem(HttpStatus.BAD_REQUEST, "PARAMETRO_INVALIDO", "Solicitud inválida", "Falta un parámetro o tiene un formato inválido");
     }
 
     @ExceptionHandler({NoResourceFoundException.class, NoHandlerFoundException.class})
     public ProblemDetail handleRouteNotFound(Exception ex) {
-        return problem(HttpStatus.NOT_FOUND, "Ruta no encontrada", "El recurso o ruta solicitada no existe");
+        return problem(HttpStatus.NOT_FOUND, "RUTA_NO_ENCONTRADA", "Ruta no encontrada", "El recurso o ruta solicitada no existe");
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail handleUnexpected(Exception ex) {
-        return problem(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno", "Ocurrió un error inesperado");
+        return problem(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR_INTERNO", "Error interno", "Ocurrió un error inesperado");
     }
 
-    private ProblemDetail problem(HttpStatus status, String title, String message) {
+    private ProblemDetail problem(HttpStatus status, String code, String title, String message) {
         ProblemDetail detail = ProblemDetail.forStatusAndDetail(status, message);
         detail.setTitle(title);
+        detail.setProperty("code", code);
+        detail.setProperty("timestamp", OffsetDateTime.now().toString());
         return detail;
     }
 }

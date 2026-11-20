@@ -66,7 +66,7 @@ public class TiendasEventListener {
         Double latitud = leerNumero(payload, "latitud", "lat");
         Double longitud = leerNumero(payload, "longitud", "lng");
         if (latitud == null || longitud == null) {
-            throw new DomainException("El evento no trae una latitud y longitud válidas");
+            throw new DomainException("El evento no trae una latitud y longitud válidas", "EVENTO_INVALIDO");
         }
         return new Ubicacion(latitud, longitud);
     }

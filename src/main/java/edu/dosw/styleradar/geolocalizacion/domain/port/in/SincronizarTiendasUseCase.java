@@ -11,4 +11,9 @@ public interface SincronizarTiendasUseCase {
     Almacen guardarAlmacen(UUID id, String nombre, String categoria, Ubicacion ubicacion);
 
     Fundacion guardarFundacion(UUID id, String nombre, Ubicacion ubicacion);
+
+    CargaTiendas cargarDesdeTiendas();
+
+    record CargaTiendas(int almacenes, int fundaciones, int descartados) {
+    }
 }

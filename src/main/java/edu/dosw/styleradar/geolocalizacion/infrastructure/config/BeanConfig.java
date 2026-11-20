@@ -8,6 +8,7 @@ import edu.dosw.styleradar.geolocalizacion.domain.port.in.ConsultarAlmacenesUseC
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.ConsultarFundacionesCercanasUseCase;
 import edu.dosw.styleradar.geolocalizacion.domain.port.out.AlmacenRepositoryPort;
 import edu.dosw.styleradar.geolocalizacion.domain.port.out.FundacionRepositoryPort;
+import edu.dosw.styleradar.geolocalizacion.domain.port.out.TiendasPort;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import edu.dosw.styleradar.geolocalizacion.application.usecase.SincronizarTiendasUseCaseImpl;
@@ -28,8 +29,9 @@ public class BeanConfig {
 
     @Bean
     public SincronizarTiendasUseCase sincronizarTiendasUseCase(AlmacenRepositoryPort almacenRepository,
-                                                               FundacionRepositoryPort fundacionRepository) {
-        return new SincronizarTiendasUseCaseImpl(almacenRepository, fundacionRepository);
+                                                               FundacionRepositoryPort fundacionRepository,
+                                                               TiendasPort tiendas) {
+        return new SincronizarTiendasUseCaseImpl(almacenRepository, fundacionRepository, tiendas);
     }
 
     @Bean
