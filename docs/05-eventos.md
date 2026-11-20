@@ -2,6 +2,17 @@
 
 El servicio no publica eventos. Consume por **RabbitMQ** (exchange `styleradar.exchange`) los almacenes y fundaciones que registra `ms-tiendas`, para mantener actualizados el mapa, las distancias y las fundaciones cercanas. El Front (por el API Gateway) y `ms-item-catalogo` (por Feign, para la distancia) consumen sus endpoints por HTTP.
 
+### Carga desde ms-tiendas por Feign
+
+Como `ms-tiendas` no publica eventos de almacenes, el servicio los carga por HTTP con `TiendasClient` (Feign) 20 segundos después de arrancar y luego cada 30 minutos:
+
+| Endpoint de ms-tiendas | Qué se toma |
+| :--- | :--- |
+| `GET /api/v1/stores?page&size` | Almacenes aprobados (todas las páginas): NIT, nombre comercial, categoría y ubicación. |
+| `GET /api/v1/foundations?latitude&longitude` | Fundaciones activas: id, nombre y ubicación. |
+
+El id de cada almacén y fundación se calcula como un UUID fijo a partir del NIT o del id de `ms-tiendas`, así que cargar varias veces actualiza los mismos registros. Las categorías se ajustan a las del análisis unificado (`DEPORTIVA` pasa a `Deportivo`). Los registros sin nombre, categoría o ubicación válida se descartan. Si `ms-tiendas` no responde, se registra un aviso y se reintenta en la siguiente carga.
+
 ### Matriz de Eventos AMQP
 
 | Tipo | Routing key | Emisor / Receptor | Qué hace |

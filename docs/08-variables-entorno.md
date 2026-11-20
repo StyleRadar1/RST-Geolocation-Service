@@ -10,6 +10,9 @@ Las variables se definen en `.env`, que no se versiona. La plantilla `.env.examp
 | `DB_NAME` | Nombre de la base de datos | `styleradar_geolocation` |
 | `DB_USER` | Usuario de PostgreSQL | `postgres` |
 | `DB_PASSWORD` | Contraseña de PostgreSQL | — |
+| `TIENDAS_URL` | URL de `ms-tiendas` con `/api/v1` | `http://localhost:8140/api/v1` (QA y PROD: `styleradar-tiendas-<ambiente>.azurewebsites.net/api/v1`) |
+| `TIENDAS_CARGA_HABILITADA` | Activa la carga periódica desde `ms-tiendas` | `true` |
+| `TIENDAS_CARGA_INTERVALO` | Cada cuánto se carga desde `ms-tiendas` | `PT30M` |
 
 ---
 
