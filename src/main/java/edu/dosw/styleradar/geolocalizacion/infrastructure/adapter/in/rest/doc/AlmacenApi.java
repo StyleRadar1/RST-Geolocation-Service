@@ -14,9 +14,13 @@ import java.util.UUID;
 public interface AlmacenApi {
 
     @Operation(summary = "Listar almacenes del mapa",
-            description = "Devuelve los almacenes aliados con su ubicación. Si se envía categoriaId, solo los de esa categoría (SR-RF-17, SR-RF-18).")
+            description = "Devuelve los almacenes aliados dentro del radio, del más cercano al más lejano, con su distanciaKm. "
+                    + "Si se envía categoriaId, solo los de esa categoría (SR-RF-17, SR-RF-18).")
     @ApiResponse(responseCode = "200", description = "Lista de almacenes")
-    @ApiResponse(responseCode = "400", description = "categoriaId no es un UUID válido")
+    @ApiResponse(responseCode = "400", description = "Falta lat o lng, están fuera de rango, radioKm no es válido o categoriaId no es un UUID")
     ResponseEntity<List<AlmacenResponse>> listar(
+            @Parameter(description = "Latitud del usuario", example = "4.6762") double lat,
+            @Parameter(description = "Longitud del usuario", example = "-74.0481") double lng,
+            @Parameter(description = "Radio en km, mayor que 0 y máximo 20", example = "5") double radioKm,
             @Parameter(description = "Filtra por categoría del almacén") UUID categoriaId);
 }

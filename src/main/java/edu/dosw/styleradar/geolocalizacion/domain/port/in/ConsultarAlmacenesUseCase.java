@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface ConsultarAlmacenesUseCase {
 
-    List<Almacen> consultar(UUID categoriaId);
+    List<Almacen> consultar(UUID categoriaId, double latitud, double longitud, double radioKm);
 }

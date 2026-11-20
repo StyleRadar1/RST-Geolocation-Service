@@ -29,14 +29,15 @@ class ControllersTest {
         // Arrange
         ConsultarAlmacenesUseCase useCase = mock(ConsultarAlmacenesUseCase.class);
         Almacen almacen = new Almacen(UUID.randomUUID(), "Calle 85", null, new Ubicacion(4.66, -74.05));
-        when(useCase.consultar(null)).thenReturn(List.of(almacen));
+        when(useCase.consultar(null, 4.66, -74.05, 5)).thenReturn(List.of(almacen));
 
         // Act
-        ResponseEntity<List<AlmacenResponse>> response = new AlmacenController(useCase).listar(null);
+        ResponseEntity<List<AlmacenResponse>> response = new AlmacenController(useCase).listar(4.66, -74.05, 5, null);
 
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).extracting(AlmacenResponse::nombre).containsExactly("Calle 85");
+        assertThat(response.getBody()).extracting(AlmacenResponse::distanciaKm).containsExactly(0.0);
     }
 
     @Test
