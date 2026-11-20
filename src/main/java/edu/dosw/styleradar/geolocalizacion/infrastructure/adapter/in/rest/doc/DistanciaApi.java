@@ -9,17 +9,17 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
-@Tag(name = "Distancia", description = "Distancia entre el usuario y un almacén")
+@Tag(name = "Distance", description = "Distance between the user and a store")
 public interface DistanciaApi {
 
-    @Operation(summary = "Calcular distancia a un almacén",
-            description = "Calcula en kilómetros la distancia entre la ubicación del usuario y el almacén (SR-RF-21).")
-    @ApiResponse(responseCode = "200", description = "Distancia calculada")
-    @ApiResponse(responseCode = "400", description = "Faltan lat o lng, o no son números")
-    @ApiResponse(responseCode = "404", description = "El almacén no existe")
-    @ApiResponse(responseCode = "422", description = "Latitud o longitud fuera de rango")
+    @Operation(summary = "Calculate distance to a store",
+            description = "Calculates in kilometers the distance between the user location and the store (SR-RF-21).")
+    @ApiResponse(responseCode = "200", description = "Distance calculated")
+    @ApiResponse(responseCode = "400", description = "lat or lng is missing or not a number")
+    @ApiResponse(responseCode = "404", description = "The store does not exist")
+    @ApiResponse(responseCode = "422", description = "Latitude or longitude out of range")
     ResponseEntity<DistanciaResponse> calcular(
-            @Parameter(description = "Id del almacén") UUID id,
-            @Parameter(description = "Latitud del usuario", example = "4.7827") double lat,
-            @Parameter(description = "Longitud del usuario", example = "-74.0427") double lng);
+            @Parameter(description = "Store id") UUID id,
+            @Parameter(description = "User latitude", example = "4.7827") double lat,
+            @Parameter(description = "User longitude", example = "-74.0427") double lng);
 }

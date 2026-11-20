@@ -6,7 +6,7 @@ public record Distancia(double kilometros) {
 
     public Distancia {
         if (kilometros < 0) {
-            throw new DomainException("La distancia no puede ser negativa");
+            throw new DomainException("La distancia no puede ser negativa", "RADIO_INVALIDO");
         }
     }
 

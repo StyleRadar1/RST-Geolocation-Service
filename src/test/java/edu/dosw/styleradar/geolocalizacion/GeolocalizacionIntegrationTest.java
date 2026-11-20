@@ -44,6 +44,7 @@ class GeolocalizacionIntegrationTest {
         registry.add("spring.rabbitmq.username", RABBIT::getAdminUsername);
         registry.add("spring.rabbitmq.password", RABBIT::getAdminPassword);
         registry.add("spring.rabbitmq.listener.simple.auto-startup", () -> "true");
+        registry.add("tiendas.carga.habilitada", () -> "false");
     }
 
     @Autowired
@@ -54,15 +55,16 @@ class GeolocalizacionIntegrationTest {
 
     @Test
     void listaLosAlmacenesDeLaBase() throws Exception {
-        mockMvc.perform(get("/almacenes"))
+        mockMvc.perform(get("/almacenes").param("lat", "4.6762").param("lng", "-74.0481").param("radioKm", "20"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].nombre", hasItem("Calle 85 Store")));
     }
 
     @Test
     void filtraAlmacenesPorCategoria() throws Exception {
-        mockMvc.perform(get("/almacenes").param("categoriaId", "22222222-2222-2222-2222-222222222222"))
+        mockMvc.perform(get("/almacenes").param("lat", "4.6762").param("lng", "-74.0481").param("categoriaId", "22222222-2222-2222-2222-222222222222"))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].categoriaId").value("22222222-2222-2222-2222-222222222222"))
                 .andExpect(jsonPath("$[0].nombre").value("Calle 85 Store"));
     }
 
@@ -133,5 +135,21 @@ class GeolocalizacionIntegrationTest {
 
         Object mensaje = rabbitTemplate.receiveAndConvert("styleradar.geolocalizacion.dlq", 10000);
         assertThat(mensaje).isInstanceOf(Map.class);
+    }
+
+    @Test
+    void existenLasCategoriasDelAnalisis() throws Exception {
+        mockMvc.perform(get("/almacenes").param("lat", "4.6762").param("lng", "-74.0481").param("categoriaId", "66666666-6666-6666-6666-666666666666"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void responde400SiLaUbicacionOElRadioNoSonValidos() throws Exception {
+        mockMvc.perform(get("/almacenes").param("lng", "-74.0"))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/almacenes").param("lat", "95").param("lng", "-74.0"))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/almacenes").param("lat", "4.6").param("lng", "-74.0").param("radioKm", "25"))
+                .andExpect(status().isBadRequest());
     }
 }

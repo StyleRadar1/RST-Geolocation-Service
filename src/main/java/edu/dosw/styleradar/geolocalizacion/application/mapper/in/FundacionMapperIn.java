@@ -12,6 +12,6 @@ public final class FundacionMapperIn {
     public static FundacionResponse toResponse(Fundacion fundacion, Ubicacion usuario) {
         return new FundacionResponse(fundacion.id(), fundacion.nombre(),
                 fundacion.ubicacion().latitud(), fundacion.ubicacion().longitud(),
-                fundacion.distanciaA(usuario).kilometros());
+                AlmacenMapperIn.redondear(fundacion.distanciaA(usuario)));
     }
 }
