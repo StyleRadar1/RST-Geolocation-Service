@@ -58,11 +58,14 @@ styleradar:
     queues:
       almacenes: ${RABBITMQ_QUEUE_ALMACENES:styleradar.geolocalizacion.almacen.q}
       fundaciones: ${RABBITMQ_QUEUE_FUNDACIONES:styleradar.geolocalizacion.fundacion.q}
+      fundaciones-estado: ${RABBITMQ_QUEUE_FUNDACIONES_ESTADO:styleradar.geolocalizacion.fundacion-estado.q}
     routing-keys:
       almacen-registrado: ${RABBITMQ_RK_ALMACEN_REGISTRADO:styleradar.tiendas.almacen.registrado}
       almacen-actualizado: ${RABBITMQ_RK_ALMACEN_ACTUALIZADO:styleradar.tiendas.almacen.actualizado}
       fundacion-registrada: ${RABBITMQ_RK_FUNDACION_REGISTRADA:styleradar.tiendas.fundacion.registrada}
       fundacion-actualizada: ${RABBITMQ_RK_FUNDACION_ACTUALIZADA:styleradar.tiendas.fundacion.actualizada}
+      fundacion-desactivada: ${RABBITMQ_RK_FUNDACION_DESACTIVADA:styleradar.tiendas.fundacion.desactivada}
+      fundacion-reactivada: ${RABBITMQ_RK_FUNDACION_REACTIVADA:styleradar.tiendas.fundacion.reactivada}
 
 tiendas:
   url: ${TIENDAS_URL:http://localhost:8140/api/v1}

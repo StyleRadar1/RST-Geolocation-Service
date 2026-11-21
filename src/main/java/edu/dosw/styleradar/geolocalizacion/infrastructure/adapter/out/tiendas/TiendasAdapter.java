@@ -1,9 +1,9 @@
 package edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.tiendas;
 
+import edu.dosw.styleradar.geolocalizacion.domain.model.IdTiendas;
 import edu.dosw.styleradar.geolocalizacion.domain.port.out.TiendasPort;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -53,11 +53,11 @@ public class TiendasAdapter implements TiendasPort {
     }
 
     static UUID idAlmacen(String nit) {
-        return nit == null || nit.isBlank() ? null : uuid("almacen:" + nit.trim());
+        return IdTiendas.almacen(nit);
     }
 
     static UUID idFundacion(Long id) {
-        return id == null ? null : uuid("fundacion:" + id);
+        return IdTiendas.fundacion(id);
     }
 
     static String categoria(Set<String> categorias) {
@@ -69,9 +69,5 @@ public class TiendasAdapter implements TiendasPort {
             return "Deportivo";
         }
         return valor.charAt(0) + valor.substring(1).toLowerCase(Locale.ROOT);
-    }
-
-    private static UUID uuid(String clave) {
-        return UUID.nameUUIDFromBytes(("ms-tiendas:" + clave).getBytes(StandardCharsets.UTF_8));
     }
 }

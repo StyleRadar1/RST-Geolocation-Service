@@ -1,10 +1,13 @@
 package edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.in.amqp;
 
 import edu.dosw.styleradar.geolocalizacion.domain.exception.DomainException;
+import edu.dosw.styleradar.geolocalizacion.domain.model.IdTiendas;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Ubicacion;
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.SincronizarTiendasUseCase;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.support.AmqpHeaders;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -36,6 +39,29 @@ public class TiendasEventListener {
                     leerUbicacion(payload));
         } catch (DomainException e) {
             throw new AmqpRejectAndDontRequeueException("Evento de fundación inválido: " + e.getMessage());
+        }
+    }
+
+    @RabbitListener(queues = "${styleradar.rabbitmq.queues.fundaciones-estado}")
+    public void onEstadoFundacion(Map<String, Object> payload,
+                                  @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String routingKey) {
+        try {
+            if (routingKey != null && routingKey.endsWith(".reactivada")) {
+                sincronizar.cargarDesdeTiendas();
+            } else {
+                sincronizar.retirarFundacion(IdTiendas.fundacion(leerLargo(payload, "fundacionId", "id")));
+            }
+        } catch (DomainException e) {
+            throw new AmqpRejectAndDontRequeueException("Evento de fundación inválido: " + e.getMessage());
+        }
+    }
+
+    static Long leerLargo(Map<String, Object> payload, String... claves) {
+        Object valor = leer(payload, claves);
+        try {
+            return valor == null ? null : Long.valueOf(valor.toString());
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 
