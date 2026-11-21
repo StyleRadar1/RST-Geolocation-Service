@@ -10,6 +10,7 @@ import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -83,5 +84,13 @@ class TiendasEventListenerTest {
 
         assertThatThrownBy(() -> listener.onEstadoFundacion(Map.of("fundacionId", "abc"),
                 "styleradar.tiendas.fundacion.desactivada")).isInstanceOf(AmqpRejectAndDontRequeueException.class);
+    }
+
+    @Test
+    void leeElIdDeLaFundacionDentroDeDataYSinRoutingKeyLaRetira() {
+        listener.onEstadoFundacion(Map.of("data", Map.of("id", "7")), null);
+
+        verify(useCase).retirarFundacion(IdTiendas.fundacion(7L));
+        assertThat(TiendasEventListener.leerLargo(Map.of(), "fundacionId")).isNull();
     }
 }
