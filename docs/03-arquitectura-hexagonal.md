@@ -20,7 +20,7 @@ El servicio sigue la arquitectura hexagonal acordada por el curso. Las reglas de
   </table>
 </div>
 
-El usuario comprador ve los almacenes aliados en el mapa según su ubicación (SR-RF-17), lo que incluye calcular la distancia a cada almacén (SR-RF-21); el filtro por categoría (SR-RF-18) extiende el mapa. También consulta la distancia a un almacén puntual y las fundaciones aliadas cercanas (SR-RF-43). `ms-item-catalogo` usa el cálculo de distancia para ordenar las prendas por cercanía. Cada caso de uso lleva el código de su requerimiento en el análisis de requerimientos, los actores usan los nombres oficiales del análisis y el rectángulo marca el límite del microservicio. El archivo editable está en `docs/evidencias/diagrama-casos-uso.drawio`.
+El usuario comprador ve los almacenes aliados en el mapa según su ubicación (SR-RF-17), lo que incluye calcular la distancia a cada almacén (SR-RF-21); el filtro por categoría (SR-RF-18) extiende el mapa. También consulta la distancia a un almacén puntual y las fundaciones aliadas cercanas (SR-RF-43). `ms-tiendas` participa como sistema externo porque de ahí se cargan los almacenes y las fundaciones que se muestran, y `ms-item-catalogo` usa el cálculo de distancia para ordenar las prendas por cercanía. Cada caso de uso lleva el código de su requerimiento en el análisis de requerimientos, los actores usan los nombres oficiales del análisis y el rectángulo marca el límite del microservicio. El archivo editable está en `docs/evidencias/diagrama-casos-uso.drawio`.
 
 ### Diagrama de Componentes General
 
