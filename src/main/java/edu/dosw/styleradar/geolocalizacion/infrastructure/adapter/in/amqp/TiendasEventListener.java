@@ -46,10 +46,10 @@ public class TiendasEventListener {
     public void onEstadoFundacion(Map<String, Object> payload,
                                   @Header(AmqpHeaders.RECEIVED_ROUTING_KEY) String routingKey) {
         try {
-            if (routingKey != null && routingKey.endsWith(".reactivada")) {
+            if (routingKey != null && (routingKey.endsWith(".reactivated") || routingKey.endsWith(".reactivada"))) {
                 sincronizar.cargarDesdeTiendas();
             } else {
-                sincronizar.retirarFundacion(IdTiendas.fundacion(leerLargo(payload, "fundacionId", "id")));
+                sincronizar.retirarFundacion(IdTiendas.fundacion(leerLargo(payload, "fundacionId", "foundationId", "id")));
             }
         } catch (DomainException e) {
             throw new AmqpRejectAndDontRequeueException("Evento de fundación inválido: " + e.getMessage());

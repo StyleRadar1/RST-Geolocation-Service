@@ -93,4 +93,13 @@ class TiendasEventListenerTest {
         verify(useCase).retirarFundacion(IdTiendas.fundacion(7L));
         assertThat(TiendasEventListener.leerLargo(Map.of(), "fundacionId")).isNull();
     }
+
+    @Test
+    void entiendeLasRoutingKeysEnInglesDeTiendas() {
+        listener.onEstadoFundacion(Map.of("fundacionId", 5), "foundation.deactivated");
+        listener.onEstadoFundacion(Map.of("fundacionId", 5), "foundation.reactivated");
+
+        verify(useCase).retirarFundacion(IdTiendas.fundacion(5L));
+        verify(useCase).cargarDesdeTiendas();
+    }
 }
