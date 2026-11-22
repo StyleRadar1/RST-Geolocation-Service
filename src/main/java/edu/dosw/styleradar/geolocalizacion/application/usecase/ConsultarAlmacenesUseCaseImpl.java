@@ -32,4 +32,13 @@ public class ConsultarAlmacenesUseCaseImpl implements ConsultarAlmacenesUseCase 
                 .sorted(Comparator.comparingDouble(a -> a.distanciaA(usuario).kilometros()))
                 .toList();
     }
+
+    // Sin la ubicación del usuario se listan todos los almacenes por nombre, sin distancia
+    @Override
+    public List<Almacen> todos(UUID categoriaId) {
+        return almacenRepository.findAll().stream()
+                .filter(a -> categoriaId == null || a.perteneceA(categoriaId))
+                .sorted(Comparator.comparing(Almacen::nombre, String.CASE_INSENSITIVE_ORDER))
+                .toList();
+    }
 }

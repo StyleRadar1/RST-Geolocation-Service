@@ -61,4 +61,10 @@ class ConsultarAlmacenesUseCaseImplTest {
         private final AlmacenRepositoryPort repository = mock(AlmacenRepositoryPort.class);
         private final ConsultarAlmacenesUseCaseImpl useCase = new ConsultarAlmacenesUseCaseImpl(repository);
     }
+
+    @Test
+    void sinUbicacionListaTodosLosAlmacenesPorNombre() {
+        assertThat(useCase.todos(null)).containsExactly(cercano, fueraDelRadio, lejano);
+        assertThat(useCase.todos(urbano.id())).containsExactly(cercano, fueraDelRadio);
+    }
 }
