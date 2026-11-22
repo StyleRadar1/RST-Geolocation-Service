@@ -10,6 +10,7 @@ import edu.dosw.styleradar.geolocalizacion.domain.model.Ubicacion;
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.CalcularDistanciaUseCase;
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.ConsultarAlmacenesUseCase;
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.ConsultarFundacionesCercanasUseCase;
+import edu.dosw.styleradar.geolocalizacion.domain.exception.ParametroInvalidoException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,5 +71,17 @@ class ControllersTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).extracting(FundacionResponse::nombre).containsExactly("Abrigo Norte");
         assertThat(response.getBody()).extracting(FundacionResponse::distanciaKm).containsExactly(0.0);
+    }
+
+    @Test
+    void sinUbicacionListaTodosSinDistanciaYConSoloUnaCoordenadaEsInvalido() {
+        ConsultarAlmacenesUseCase useCase = mock(ConsultarAlmacenesUseCase.class);
+        Almacen almacen = new Almacen(UUID.randomUUID(), "Calle 85", null, new Ubicacion(4.66, -74.05));
+        when(useCase.todos(null)).thenReturn(List.of(almacen));
+        AlmacenController controller = new AlmacenController(useCase);
+
+        assertThat(controller.listar(null, null, 5, null).getBody())
+                .extracting(AlmacenResponse::distanciaKm).containsExactly((Double) null);
+        assertThatThrownBy(() -> controller.listar(4.66, null, 5, null)).isInstanceOf(ParametroInvalidoException.class);
     }
 }

@@ -2,6 +2,7 @@ package edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.in.rest;
 
 import edu.dosw.styleradar.geolocalizacion.application.dto.response.AlmacenResponse;
 import edu.dosw.styleradar.geolocalizacion.application.mapper.in.AlmacenMapperIn;
+import edu.dosw.styleradar.geolocalizacion.domain.exception.ParametroInvalidoException;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Almacen;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Ubicacion;
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.ConsultarAlmacenesUseCase;
@@ -27,10 +28,18 @@ public class AlmacenController implements AlmacenApi {
 
     @Override
     @GetMapping
-    public ResponseEntity<List<AlmacenResponse>> listar(@RequestParam double lat,
-                                                        @RequestParam double lng,
+    public ResponseEntity<List<AlmacenResponse>> listar(@RequestParam(required = false) Double lat,
+                                                        @RequestParam(required = false) Double lng,
                                                         @RequestParam(defaultValue = "5") double radioKm,
                                                         @RequestParam(required = false) UUID categoriaId) {
+        if (lat == null && lng == null) {
+            return ResponseEntity.ok(consultarAlmacenes.todos(categoriaId).stream()
+                    .map(almacen -> AlmacenMapperIn.toResponse(almacen, null))
+                    .toList());
+        }
+        if (lat == null || lng == null) {
+            throw new ParametroInvalidoException("Falta un parámetro o tiene un formato inválido");
+        }
         List<Almacen> almacenes = consultarAlmacenes.consultar(categoriaId, lat, lng, radioKm);
         Ubicacion usuario = new Ubicacion(lat, lng);
         return ResponseEntity.ok(almacenes.stream()

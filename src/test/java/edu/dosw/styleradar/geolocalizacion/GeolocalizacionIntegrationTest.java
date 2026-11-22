@@ -145,6 +145,8 @@ class GeolocalizacionIntegrationTest {
 
     @Test
     void responde400SiLaUbicacionOElRadioNoSonValidos() throws Exception {
+        mockMvc.perform(get("/almacenes"))
+                .andExpect(status().isOk());
         mockMvc.perform(get("/almacenes").param("lng", "-74.0"))
                 .andExpect(status().isBadRequest());
         mockMvc.perform(get("/almacenes").param("lat", "95").param("lng", "-74.0"))
