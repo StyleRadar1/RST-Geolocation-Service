@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -93,5 +94,15 @@ class SincronizarTiendasUseCaseImplTest {
         SincronizarTiendasUseCase.CargaTiendas carga = useCase.cargarDesdeTiendas();
 
         assertThat(carga).isEqualTo(new SincronizarTiendasUseCase.CargaTiendas(1, 1, 3));
+    }
+
+    @Test
+    void retiraLaFundacion() {
+        UUID id = UUID.randomUUID();
+
+        useCase.retirarFundacion(id);
+
+        verify(fundaciones).deleteById(id);
+        assertThatThrownBy(() -> useCase.retirarFundacion(null)).isInstanceOf(DomainException.class);
     }
 }

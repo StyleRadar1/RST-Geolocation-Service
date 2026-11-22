@@ -19,6 +19,7 @@ El id de cada almacén y fundación se calcula como un UUID fijo a partir del NI
 | :---: | :--- | :--- | :--- |
 | **CONSUME** | `styleradar.tiendas.almacen.registrado` · `.almacen.actualizado` | `ms-tiendas` &rarr; `ms-geolocalizacion` | Crea o actualiza el almacén con su nombre, categoría y ubicación. |
 | **CONSUME** | `styleradar.tiendas.fundacion.registrada` · `.fundacion.actualizada` | `ms-tiendas` &rarr; `ms-geolocalizacion` | Crea o actualiza la fundación con su nombre y ubicación. |
+| **CONSUME** | `foundation.deactivated` · `foundation.reactivated` | `ms-tiendas` &rarr; `ms-geolocalizacion` | Desactivada: la fundación deja de aparecer en las fundaciones cercanas. Reactivada: se vuelve a cargar desde `ms-tiendas` por Feign, porque el evento no trae la ubicación. |
 
 Contenido esperado: `almacenId` o `fundacionId` (UUID), `nombre`, `categoria` (solo almacenes) y `latitud`/`longitud`. También se aceptan dentro de `data`. Si la categoría no existe se crea.
 
@@ -28,9 +29,10 @@ Contenido esperado: `almacenId` o `fundacionId` (UUID), `nombre`, `categoria` (s
 | :--- | :--- |
 | `styleradar.geolocalizacion.almacen.q` | Recibe los eventos de almacenes. |
 | `styleradar.geolocalizacion.fundacion.q` | Recibe los eventos de fundaciones. |
+| `styleradar.geolocalizacion.fundacion-estado.q` | Recibe las desactivaciones y reactivaciones de fundaciones. |
 | `styleradar.geolocalizacion.dlq` | Cola de errores: por el DLX `styleradar.dlx` llegan los eventos inválidos (sin id, nombre o ubicación válidos), tras 3 intentos. |
 
-El consumidor está apagado por defecto (`RABBITMQ_LISTENER_ENABLED=false`) hasta que el servicio tenga su usuario en el broker; se enciende por ambiente junto con `RABBITMQ_HOST`, `RABBITMQ_USER` y `RABBITMQ_PASSWORD`.
+En QA el consumidor está encendido con el usuario `ms_geolocalizacion` del broker (el despliegue pasa las variables solo para QA). Fuera de QA está apagado por defecto (`RABBITMQ_LISTENER_ENABLED=false`) hasta que el servicio tenga su usuario en el broker; se enciende por ambiente junto con `RABBITMQ_HOST`, `RABBITMQ_USER` y `RABBITMQ_PASSWORD`.
 
 ---
 

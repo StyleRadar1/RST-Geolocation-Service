@@ -3,15 +3,18 @@ package edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.in.amqp;
 import edu.dosw.styleradar.geolocalizacion.domain.exception.DomainException;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Ubicacion;
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.SincronizarTiendasUseCase;
+import edu.dosw.styleradar.geolocalizacion.domain.model.IdTiendas;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;
 
 import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,5 +61,45 @@ class TiendasEventListenerTest {
                 "latitud", "norte", "longitud", -74.1))).isInstanceOf(AmqpRejectAndDontRequeueException.class);
         assertThatThrownBy(() -> listener.onFundacion(Map.of("fundacionId", id.toString(), "nombre", "X",
                 "latitud", 120, "longitud", -74.1))).isInstanceOf(AmqpRejectAndDontRequeueException.class);
+    }
+
+    @Test
+    void retiraLaFundacionDesactivada() {
+        listener.onEstadoFundacion(Map.of("fundacionId", 3, "nombreFundacion", "Abrigo"),
+                "styleradar.tiendas.fundacion.desactivada");
+
+        verify(useCase).retirarFundacion(IdTiendas.fundacion(3L));
+    }
+
+    @Test
+    void recargaDesdeTiendasCuandoSeReactiva() {
+        listener.onEstadoFundacion(Map.of("fundacionId", 3), "styleradar.tiendas.fundacion.reactivada");
+
+        verify(useCase).cargarDesdeTiendas();
+    }
+
+    @Test
+    void rechazaLaDesactivacionSinId() {
+        doThrow(new DomainException("x", "EVENTO_INVALIDO")).when(useCase).retirarFundacion(null);
+
+        assertThatThrownBy(() -> listener.onEstadoFundacion(Map.of("fundacionId", "abc"),
+                "styleradar.tiendas.fundacion.desactivada")).isInstanceOf(AmqpRejectAndDontRequeueException.class);
+    }
+
+    @Test
+    void leeElIdDeLaFundacionDentroDeDataYSinRoutingKeyLaRetira() {
+        listener.onEstadoFundacion(Map.of("data", Map.of("id", "7")), null);
+
+        verify(useCase).retirarFundacion(IdTiendas.fundacion(7L));
+        assertThat(TiendasEventListener.leerLargo(Map.of(), "fundacionId")).isNull();
+    }
+
+    @Test
+    void entiendeLasRoutingKeysEnInglesDeTiendas() {
+        listener.onEstadoFundacion(Map.of("fundacionId", 5), "foundation.deactivated");
+        listener.onEstadoFundacion(Map.of("fundacionId", 5), "foundation.reactivated");
+
+        verify(useCase).retirarFundacion(IdTiendas.fundacion(5L));
+        verify(useCase).cargarDesdeTiendas();
     }
 }

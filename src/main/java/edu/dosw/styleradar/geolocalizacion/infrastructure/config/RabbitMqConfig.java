@@ -82,6 +82,23 @@ public class RabbitMqConfig {
     }
 
     @Bean
+    public Queue fundacionesEstadoQueue(@Value("${styleradar.rabbitmq.queues.fundaciones-estado}") String nombre) {
+        return colaConErrores(nombre);
+    }
+
+    @Bean
+    public Binding fundacionDesactivadaBinding(Queue fundacionesEstadoQueue,
+                                               @Value("${styleradar.rabbitmq.routing-keys.fundacion-desactivada}") String routingKey) {
+        return BindingBuilder.bind(fundacionesEstadoQueue).to(styleradarExchange()).with(routingKey);
+    }
+
+    @Bean
+    public Binding fundacionReactivadaBinding(Queue fundacionesEstadoQueue,
+                                              @Value("${styleradar.rabbitmq.routing-keys.fundacion-reactivada}") String routingKey) {
+        return BindingBuilder.bind(fundacionesEstadoQueue).to(styleradarExchange()).with(routingKey);
+    }
+
+    @Bean
     public MessageConverter messageConverter() {
         return new Jackson2JsonMessageConverter();
     }

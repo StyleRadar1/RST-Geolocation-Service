@@ -100,4 +100,14 @@ class RepositoryAdaptersTest {
 
         assertThat(guardada.nombre()).isEqualTo("Abrigo Norte");
     }
+
+    @Test
+    void borraUnaFundacion() {
+        FundacionJpaRepository jpa = mock(FundacionJpaRepository.class);
+        UUID id = UUID.randomUUID();
+
+        new FundacionRepositoryAdapter(jpa).deleteById(id);
+
+        verify(jpa).deleteById(id);
+    }
 }

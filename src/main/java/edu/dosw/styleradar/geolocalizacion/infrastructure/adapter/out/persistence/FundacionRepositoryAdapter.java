@@ -7,6 +7,7 @@ import edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.out.persistenc
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class FundacionRepositoryAdapter implements FundacionRepositoryPort {
@@ -25,5 +26,10 @@ public class FundacionRepositoryAdapter implements FundacionRepositoryPort {
     @Override
     public Fundacion save(Fundacion fundacion) {
         return FundacionMapperOut.toDomain(jpaRepository.save(FundacionMapperOut.toEntity(fundacion)));
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
     }
 }

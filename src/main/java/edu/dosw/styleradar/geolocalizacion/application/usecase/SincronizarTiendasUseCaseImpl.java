@@ -67,6 +67,14 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
         return new CargaTiendas(almacenes, fundaciones, descartados);
     }
 
+    @Override
+    public void retirarFundacion(UUID id) {
+        if (id == null) {
+            throw new DomainException("El evento debe traer el id de la fundación", "EVENTO_INVALIDO");
+        }
+        fundacionRepository.deleteById(id);
+    }
+
     private static Ubicacion ubicacion(Double latitud, Double longitud) {
         return latitud == null || longitud == null ? null : new Ubicacion(latitud, longitud);
     }
