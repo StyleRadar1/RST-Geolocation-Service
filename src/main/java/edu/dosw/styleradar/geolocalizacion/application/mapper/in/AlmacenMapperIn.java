@@ -17,7 +17,7 @@ public final class AlmacenMapperIn {
         UUID categoriaId = almacen.categoria() == null ? null : almacen.categoria().id();
         String categoria = almacen.categoria() == null ? null : almacen.categoria().nombre();
         Double distanciaKm = usuario == null ? null : redondear(almacen.distanciaA(usuario));
-        return new AlmacenResponse(almacen.id(), almacen.nombre(), categoriaId, categoria,
+        return new AlmacenResponse(almacen.id(), almacen.nit(), almacen.nombre(), categoriaId, categoria,
                 almacen.ubicacion().latitud(), almacen.ubicacion().longitud(), distanciaKm);
     }
 

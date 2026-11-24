@@ -83,10 +83,11 @@ class RepositoryAdaptersTest {
         AlmacenRepositoryAdapter adapter = new AlmacenRepositoryAdapter(jpa, categorias);
 
         CategoriaAlmacen categoria = adapter.findCategoriaByNombre("urbano").orElseThrow();
-        Almacen guardado = adapter.save(new Almacen(UUID.randomUUID(), "Nora", categoria, new Ubicacion(4.6, -74.1)));
+        Almacen guardado = adapter.save(new Almacen(UUID.randomUUID(), "Nora", categoria, new Ubicacion(4.6, -74.1), "900555777-1"));
 
         assertThat(categoria.nombre()).isEqualTo("Urbano");
         assertThat(guardado.ubicacion().latitud()).isEqualTo(4.6);
+        assertThat(guardado.nit()).isEqualTo("900555777-1");
         verify(categorias).save(any());
     }
 

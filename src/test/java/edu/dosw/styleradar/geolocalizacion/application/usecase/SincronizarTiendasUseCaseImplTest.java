@@ -43,20 +43,22 @@ class SincronizarTiendasUseCaseImplTest {
         CategoriaAlmacen urbano = new CategoriaAlmacen(UUID.randomUUID(), "Urbano");
         when(almacenes.findCategoriaByNombre("Urbano")).thenReturn(Optional.of(urbano));
 
-        Almacen almacen = useCase.guardarAlmacen(UUID.randomUUID(), " Calle 85 ", "Urbano", ubicacion);
+        Almacen almacen = useCase.guardarAlmacen(UUID.randomUUID(), " 900555777-1 ", " Calle 85 ", "Urbano", ubicacion);
 
         assertThat(almacen.nombre()).isEqualTo("Calle 85");
         assertThat(almacen.categoria()).isEqualTo(urbano);
+        assertThat(almacen.nit()).isEqualTo("900555777-1");
     }
 
     @Test
     void creaLaCategoriaSiNoExiste() {
         when(almacenes.findCategoriaByNombre("Vintage")).thenReturn(Optional.empty());
 
-        Almacen almacen = useCase.guardarAlmacen(UUID.randomUUID(), "Nora", "Vintage", ubicacion);
+        Almacen almacen = useCase.guardarAlmacen(UUID.randomUUID(), " ", "Nora", "Vintage", ubicacion);
 
         assertThat(almacen.categoria().nombre()).isEqualTo("Vintage");
         assertThat(almacen.categoria().id()).isNotNull();
+        assertThat(almacen.nit()).isNull();
     }
 
     @Test
@@ -73,8 +75,8 @@ class SincronizarTiendasUseCaseImplTest {
     void rechazaEventosIncompletos() {
         UUID id = UUID.randomUUID();
 
-        assertThatThrownBy(() -> useCase.guardarAlmacen(id, "Nora", " ", ubicacion)).isInstanceOf(DomainException.class);
-        assertThatThrownBy(() -> useCase.guardarAlmacen(null, "Nora", "Vintage", ubicacion)).isInstanceOf(DomainException.class);
+        assertThatThrownBy(() -> useCase.guardarAlmacen(id, null, "Nora", " ", ubicacion)).isInstanceOf(DomainException.class);
+        assertThatThrownBy(() -> useCase.guardarAlmacen(null, null, "Nora", "Vintage", ubicacion)).isInstanceOf(DomainException.class);
         assertThatThrownBy(() -> useCase.guardarFundacion(id, "", ubicacion)).isInstanceOf(DomainException.class);
         assertThatThrownBy(() -> useCase.guardarFundacion(id, "Abrigo", null)).isInstanceOf(DomainException.class);
         verifyNoInteractions(fundaciones);
@@ -84,9 +86,9 @@ class SincronizarTiendasUseCaseImplTest {
     void cargaLosAlmacenesYFundacionesDeTiendasYDescartaLosInvalidos() {
         when(almacenes.findCategoriaByNombre("Casual")).thenReturn(Optional.empty());
         when(tiendas.almacenes()).thenReturn(List.of(
-                new TiendasPort.AlmacenTienda(UUID.randomUUID(), "Atelier", "Casual", 4.65, -74.06),
-                new TiendasPort.AlmacenTienda(UUID.randomUUID(), "Sin categoria", null, 4.65, -74.06),
-                new TiendasPort.AlmacenTienda(UUID.randomUUID(), "Fuera de rango", "Casual", 95.0, -74.06)));
+                new TiendasPort.AlmacenTienda(UUID.randomUUID(), "900123456-1", "Atelier", "Casual", 4.65, -74.06),
+                new TiendasPort.AlmacenTienda(UUID.randomUUID(), null, "Sin categoria", null, 4.65, -74.06),
+                new TiendasPort.AlmacenTienda(UUID.randomUUID(), null, "Fuera de rango", "Casual", 95.0, -74.06)));
         when(tiendas.fundaciones()).thenReturn(List.of(
                 new TiendasPort.FundacionTienda(UUID.randomUUID(), "Abrigo Solidario", 4.67, -74.05),
                 new TiendasPort.FundacionTienda(UUID.randomUUID(), "Sin ubicacion", null, -74.05)));
