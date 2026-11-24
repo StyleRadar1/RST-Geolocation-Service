@@ -19,7 +19,7 @@ public class CalcularDistanciaUseCaseImpl implements CalcularDistanciaUseCase {
     @Override
     public Distancia calcular(UUID almacenId, Ubicacion usuario) {
         return almacenRepository.findById(almacenId)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe el almacén " + almacenId))
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el almacén " + almacenId, "ALMACEN_NO_ENCONTRADO"))
                 .distanciaA(usuario);
     }
 }

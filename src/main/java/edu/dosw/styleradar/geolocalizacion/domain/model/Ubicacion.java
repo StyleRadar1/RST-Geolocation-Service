@@ -8,10 +8,10 @@ public record Ubicacion(double latitud, double longitud) {
 
     public Ubicacion {
         if (latitud < -90 || latitud > 90) {
-            throw new DomainException("La latitud debe estar entre -90 y 90");
+            throw new DomainException("La latitud debe estar entre -90 y 90", "COORDENADA_FUERA_DE_RANGO");
         }
         if (longitud < -180 || longitud > 180) {
-            throw new DomainException("La longitud debe estar entre -180 y 180");
+            throw new DomainException("La longitud debe estar entre -180 y 180", "COORDENADA_FUERA_DE_RANGO");
         }
     }
 

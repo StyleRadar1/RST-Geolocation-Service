@@ -9,16 +9,16 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-@Tag(name = "Fundaciones", description = "Fundaciones aliadas para donaciones")
+@Tag(name = "Foundations", description = "Allied foundations for donations")
 public interface FundacionApi {
 
-    @Operation(summary = "Consultar fundaciones cercanas",
-            description = "Devuelve las fundaciones que están a menos de radioKm del usuario (SR-RF-43).")
-    @ApiResponse(responseCode = "200", description = "Fundaciones cercanas")
-    @ApiResponse(responseCode = "400", description = "Faltan lat o lng, o no son números")
-    @ApiResponse(responseCode = "422", description = "Ubicación o radio inválidos")
+    @Operation(summary = "Get nearby foundations",
+            description = "Returns the foundations within radioKm of the user, nearest first, with their distanciaKm (SR-RF-43).")
+    @ApiResponse(responseCode = "200", description = "Nearby foundations")
+    @ApiResponse(responseCode = "400", description = "lat or lng is missing or not a number")
+    @ApiResponse(responseCode = "422", description = "Invalid location or radius")
     ResponseEntity<List<FundacionResponse>> cercanas(
-            @Parameter(description = "Latitud del usuario", example = "4.7827") double lat,
-            @Parameter(description = "Longitud del usuario", example = "-74.0427") double lng,
-            @Parameter(description = "Radio de búsqueda en km", example = "5") double radioKm);
+            @Parameter(description = "User latitude", example = "4.7827") double lat,
+            @Parameter(description = "User longitude", example = "-74.0427") double lng,
+            @Parameter(description = "Search radius in km", example = "5") double radioKm);
 }

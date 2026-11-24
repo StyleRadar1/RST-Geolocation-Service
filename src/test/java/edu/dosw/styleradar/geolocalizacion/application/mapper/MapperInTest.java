@@ -21,18 +21,23 @@ class MapperInTest {
     @Test
     void mapeaAlmacenConCategoria() {
         UUID id = UUID.randomUUID();
-        Almacen almacen = new Almacen(id, "Calle 85", new CategoriaAlmacen(UUID.randomUUID(), "Urbano"), new Ubicacion(4.66, -74.05));
+        UUID categoriaId = UUID.randomUUID();
+        Almacen almacen = new Almacen(id, "Calle 85", new CategoriaAlmacen(categoriaId, "Urbano"), new Ubicacion(4.66, -74.05));
 
-        AlmacenResponse response = AlmacenMapperIn.toResponse(almacen);
+        AlmacenResponse response = AlmacenMapperIn.toResponse(almacen, new Ubicacion(4.66, -74.05));
 
-        assertThat(response).isEqualTo(new AlmacenResponse(id, "Calle 85", "Urbano", 4.66, -74.05));
+        assertThat(response).isEqualTo(new AlmacenResponse(id, "Calle 85", categoriaId, "Urbano", 4.66, -74.05, 0.0));
     }
 
     @Test
     void mapeaAlmacenSinCategoria() {
         Almacen almacen = new Almacen(UUID.randomUUID(), "Sin categoría", null, new Ubicacion(4.66, -74.05));
 
-        assertThat(AlmacenMapperIn.toResponse(almacen).categoria()).isNull();
+        AlmacenResponse response = AlmacenMapperIn.toResponse(almacen, null);
+
+        assertThat(response.categoria()).isNull();
+        assertThat(response.categoriaId()).isNull();
+        assertThat(response.distanciaKm()).isNull();
     }
 
     @Test
@@ -48,8 +53,9 @@ class MapperInTest {
     void mapeaFundacion() {
         UUID id = UUID.randomUUID();
 
-        FundacionResponse response = FundacionMapperIn.toResponse(new Fundacion(id, "Abrigo Norte", new Ubicacion(4.78, -74.04)));
+        FundacionResponse response = FundacionMapperIn.toResponse(new Fundacion(id, "Abrigo Norte", new Ubicacion(4.78, -74.04)),
+                new Ubicacion(4.78, -74.04));
 
-        assertThat(response).isEqualTo(new FundacionResponse(id, "Abrigo Norte", 4.78, -74.04));
+        assertThat(response).isEqualTo(new FundacionResponse(id, "Abrigo Norte", 4.78, -74.04, 0.0));
     }
 }

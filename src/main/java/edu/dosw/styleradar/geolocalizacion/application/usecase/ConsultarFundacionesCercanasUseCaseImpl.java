@@ -6,6 +6,7 @@ import edu.dosw.styleradar.geolocalizacion.domain.model.Ubicacion;
 import edu.dosw.styleradar.geolocalizacion.domain.port.in.ConsultarFundacionesCercanasUseCase;
 import edu.dosw.styleradar.geolocalizacion.domain.port.out.FundacionRepositoryPort;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class ConsultarFundacionesCercanasUseCaseImpl implements ConsultarFundacionesCercanasUseCase {
@@ -20,6 +21,7 @@ public class ConsultarFundacionesCercanasUseCaseImpl implements ConsultarFundaci
     public List<Fundacion> consultar(Ubicacion usuario, Distancia radio) {
         return fundacionRepository.findAll().stream()
                 .filter(f -> f.estaCercaDe(usuario, radio))
+                .sorted(Comparator.comparingDouble(f -> f.distanciaA(usuario).kilometros()))
                 .toList();
     }
 }
