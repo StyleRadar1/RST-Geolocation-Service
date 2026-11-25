@@ -106,7 +106,7 @@ class GeolocalizacionIntegrationTest {
         int estado = 404;
         for (int i = 0; i < 50 && estado != 200; i++) {
             Thread.sleep(100);
-            estado = mockMvc.perform(get("/almacenes/" + id + "/distancia").param("lat", "6.2442").param("lng", "-75.5812"))
+            estado = mockMvc.perform(get("/stores/" + id + "/distance").param("lat", "6.2442").param("lng", "-75.5812"))
                     .andReturn().getResponse().getStatus();
         }
 
@@ -122,7 +122,7 @@ class GeolocalizacionIntegrationTest {
         String body = "[]";
         for (int i = 0; i < 50 && !body.contains("Ropero"); i++) {
             Thread.sleep(100);
-            body = mockMvc.perform(get("/fundaciones/cercanas").param("lat", "6.2442").param("lng", "-75.5812"))
+            body = mockMvc.perform(get("/foundations/nearby").param("lat", "6.2442").param("lng", "-75.5812"))
                     .andReturn().getResponse().getContentAsString();
         }
 
