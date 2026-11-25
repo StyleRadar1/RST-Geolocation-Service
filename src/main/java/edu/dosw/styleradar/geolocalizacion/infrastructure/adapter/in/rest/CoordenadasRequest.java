@@ -14,7 +14,7 @@ final class CoordenadasRequest {
         if (resolvedLat == null && resolvedLng == null) {
             return null;
         }
-        if (resolvedLat == null || resolvedLng == null) {
+        if (resolvedLat == null || resolvedLng == null || resolvedLat < -90 || resolvedLat > 90 || resolvedLng < -180 || resolvedLng > 180) {
             throw new ParametroInvalidoException("Falta un parámetro o tiene un formato inválido");
         }
         return new Ubicacion(resolvedLat, resolvedLng);
