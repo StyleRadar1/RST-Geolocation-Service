@@ -25,7 +25,7 @@ public class AlmacenController implements AlmacenApi {
     }
 
     @Override
-    @GetMapping({"/geolocation/stores", "/almacenes"})
+    @GetMapping({"/stores/nearby", "/almacenes"})
     public ResponseEntity<List<AlmacenResponse>> listar(@RequestParam(required = false) Double lat,
                                                         @RequestParam(required = false) Double lng,
                                                         @RequestParam(defaultValue = "5") double radioKm,
