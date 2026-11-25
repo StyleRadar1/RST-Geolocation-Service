@@ -24,10 +24,13 @@ public class FundacionController implements FundacionApi {
 
     @Override
     @GetMapping("/foundations/nearby")
-    public ResponseEntity<List<FundacionResponse>> cercanas(@RequestParam double lat,
-                                                            @RequestParam double lng,
+    public ResponseEntity<List<FundacionResponse>> cercanas(@RequestParam(required = false) Double lat,
+                                                            @RequestParam(required = false) Double lng,
+                                                            @RequestParam(required = false) Double latitud,
+                                                            @RequestParam(required = false) Double longitud,
+                                                            @RequestParam(required = false) Double lon,
                                                             @RequestParam(defaultValue = "5") double radioKm) {
-        Ubicacion usuario = new Ubicacion(lat, lng);
+        Ubicacion usuario = CoordenadasRequest.resolverObligatoria(lat, latitud, lng, longitud, lon);
         return ResponseEntity.ok(consultarFundaciones.consultar(usuario, new Distancia(radioKm)).stream()
                 .map(fundacion -> FundacionMapperIn.toResponse(fundacion, usuario))
                 .toList());

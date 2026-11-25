@@ -20,6 +20,9 @@ public interface DistanciaApi {
     @ApiResponse(responseCode = "422", description = "Latitude or longitude out of range")
     ResponseEntity<DistanciaResponse> calcular(
             @Parameter(description = "Store id") UUID id,
-            @Parameter(description = "User latitude", example = "4.7827") double lat,
-            @Parameter(description = "User longitude", example = "-74.0427") double lng);
+            @Parameter(description = "User latitude", example = "4.7827") Double lat,
+            @Parameter(description = "User longitude", example = "-74.0427") Double lng,
+            @Parameter(description = "Alias for lat", example = "4.7827") Double latitud,
+            @Parameter(description = "Alias for lng", example = "-74.0427") Double longitud,
+            @Parameter(description = "Alias for lng", example = "-74.0427") Double lon);
 }

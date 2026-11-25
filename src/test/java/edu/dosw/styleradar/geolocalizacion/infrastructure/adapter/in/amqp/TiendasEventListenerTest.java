@@ -111,4 +111,15 @@ class TiendasEventListenerTest {
         verify(useCase).retirarFundacion(IdTiendas.fundacion(5L));
         verify(useCase).cargarDesdeTiendas();
     }
+
+    @Test
+    void aceptaCamposEnInglesParaCoordenadasYNombre() {
+        listener.onAlmacen(Map.of("almacenId", id.toString(), "name", "English Store", "categoria", "Casual",
+                "latitude", 4.65, "longitude", -74.06));
+        listener.onFundacion(Map.of("fundacionId", id.toString(), "name", "Warm Coat Foundation",
+                "latitude", 4.71, "lon", -74.03));
+
+        verify(useCase).guardarAlmacen(id, null, "English Store", "Casual", new Ubicacion(4.65, -74.06));
+        verify(useCase).guardarFundacion(id, "Warm Coat Foundation", new Ubicacion(4.71, -74.03));
+    }
 }
