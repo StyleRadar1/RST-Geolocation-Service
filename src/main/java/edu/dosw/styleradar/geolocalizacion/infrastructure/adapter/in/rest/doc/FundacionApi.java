@@ -18,7 +18,10 @@ public interface FundacionApi {
     @ApiResponse(responseCode = "400", description = "lat or lng is missing or not a number")
     @ApiResponse(responseCode = "422", description = "Invalid location or radius")
     ResponseEntity<List<FundacionResponse>> cercanas(
-            @Parameter(description = "User latitude", example = "4.7827") double lat,
-            @Parameter(description = "User longitude", example = "-74.0427") double lng,
+            @Parameter(description = "User latitude", example = "4.7827") Double lat,
+            @Parameter(description = "User longitude", example = "-74.0427") Double lng,
+            @Parameter(description = "Alias for lat", example = "4.7827") Double latitud,
+            @Parameter(description = "Alias for lng", example = "-74.0427") Double longitud,
+            @Parameter(description = "Alias for lng", example = "-74.0427") Double lon,
             @Parameter(description = "Search radius in km", example = "5") double radioKm);
 }
