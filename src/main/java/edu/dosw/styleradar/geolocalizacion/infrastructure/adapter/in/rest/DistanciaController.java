@@ -23,7 +23,7 @@ public class DistanciaController implements DistanciaApi {
     }
 
     @Override
-    @GetMapping({"/stores/{id}/distance", "/almacenes/{id}/distancia"})
+    @GetMapping("/stores/{id}/distance")
     public ResponseEntity<DistanciaResponse> calcular(@PathVariable UUID id,
                                                       @RequestParam double lat,
                                                       @RequestParam double lng) {

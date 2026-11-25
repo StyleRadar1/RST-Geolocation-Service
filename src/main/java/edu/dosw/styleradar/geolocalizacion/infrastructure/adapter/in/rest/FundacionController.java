@@ -23,7 +23,7 @@ public class FundacionController implements FundacionApi {
     }
 
     @Override
-    @GetMapping({"/foundations/nearby", "/fundaciones/cercanas"})
+    @GetMapping("/foundations/nearby")
     public ResponseEntity<List<FundacionResponse>> cercanas(@RequestParam double lat,
                                                             @RequestParam double lng,
                                                             @RequestParam(defaultValue = "5") double radioKm) {
