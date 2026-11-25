@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface SincronizarTiendasUseCase {
 
-    Almacen guardarAlmacen(UUID id, String nombre, String categoria, Ubicacion ubicacion);
+    Almacen guardarAlmacen(UUID id, String nit, String nombre, String categoria, Ubicacion ubicacion);
 
     Fundacion guardarFundacion(UUID id, String nombre, Ubicacion ubicacion);
 

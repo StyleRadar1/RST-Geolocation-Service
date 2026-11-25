@@ -30,7 +30,7 @@ class TiendasEventListenerTest {
         listener.onAlmacen(Map.of("almacenId", id.toString(), "nombre", "Calle 85", "categoria", "Urbano",
                 "latitud", 4.67, "longitud", "-74.05"));
 
-        verify(useCase).guardarAlmacen(id, "Calle 85", "Urbano", new Ubicacion(4.67, -74.05));
+        verify(useCase).guardarAlmacen(id, null, "Calle 85", "Urbano", new Ubicacion(4.67, -74.05));
     }
 
     @Test
@@ -38,7 +38,16 @@ class TiendasEventListenerTest {
         listener.onAlmacen(Map.of("data", Map.of("id", id.toString(), "nombre", "Nora",
                 "categoria", Map.of("nombre", "Vintage"), "lat", 4.6, "lng", -74.1)));
 
-        verify(useCase).guardarAlmacen(id, "Nora", "Vintage", new Ubicacion(4.6, -74.1));
+        verify(useCase).guardarAlmacen(id, null, "Nora", "Vintage", new Ubicacion(4.6, -74.1));
+    }
+
+    @Test
+    void sinUuidElIdDelAlmacenSaleDelNit() {
+        listener.onAlmacen(Map.of("nit", "900555777-1", "tradeName", "Almacén Pruebas", "categoria", "Casual",
+                "latitud", 4.6, "longitud", -74.1));
+
+        verify(useCase).guardarAlmacen(IdTiendas.almacen("900555777-1"), "900555777-1", "Almacén Pruebas", "Casual",
+                new Ubicacion(4.6, -74.1));
     }
 
     @Test
@@ -51,7 +60,7 @@ class TiendasEventListenerTest {
 
     @Test
     void mandaALaColaDeErroresLosEventosInvalidos() {
-        when(useCase.guardarAlmacen(eq(null), any(), any(), any())).thenThrow(new DomainException("sin id"));
+        when(useCase.guardarAlmacen(eq(null), any(), any(), any(), any())).thenThrow(new DomainException("sin id"));
 
         assertThatThrownBy(() -> listener.onAlmacen(Map.of("almacenId", "no-es-uuid", "nombre", "X", "categoria", "Y",
                 "latitud", 4.6, "longitud", -74.1))).isInstanceOf(AmqpRejectAndDontRequeueException.class);

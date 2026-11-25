@@ -31,15 +31,24 @@ public class AlmacenEntity {
     @Column(nullable = false, precision = 9, scale = 6)
     private BigDecimal longitud;
 
+    @Column(length = 30)
+    private String nit;
+
     protected AlmacenEntity() {
     }
 
     public AlmacenEntity(UUID id, CategoriaAlmacenEntity categoria, String nombre, BigDecimal latitud, BigDecimal longitud) {
+        this(id, categoria, nombre, latitud, longitud, null);
+    }
+
+    public AlmacenEntity(UUID id, CategoriaAlmacenEntity categoria, String nombre, BigDecimal latitud, BigDecimal longitud,
+                         String nit) {
         this.id = id;
         this.categoria = categoria;
         this.nombre = nombre;
         this.latitud = latitud;
         this.longitud = longitud;
+        this.nit = nit;
     }
 
     public UUID getId() {
@@ -60,5 +69,9 @@ public class AlmacenEntity {
 
     public BigDecimal getLongitud() {
         return longitud;
+    }
+
+    public String getNit() {
+        return nit;
     }
 }

@@ -25,8 +25,11 @@ public class TiendasEventListener {
     @RabbitListener(queues = "${styleradar.rabbitmq.queues.almacenes}")
     public void onAlmacen(Map<String, Object> payload) {
         try {
-            sincronizar.guardarAlmacen(leerUuid(payload, "almacenId", "tiendaId", "id"), leerTexto(payload, "nombre"),
-                    leerCategoria(payload), leerUbicacion(payload));
+            String nit = leerTexto(payload, "nit");
+            UUID id = leerUuid(payload, "almacenId", "tiendaId", "id");
+            sincronizar.guardarAlmacen(id != null ? id : IdTiendas.almacen(nit), nit,
+                    leerTexto(payload, "nombre", "nombreComercial", "tradeName"), leerCategoria(payload),
+                    leerUbicacion(payload));
         } catch (DomainException e) {
             throw new AmqpRejectAndDontRequeueException("Evento de almacén inválido: " + e.getMessage());
         }

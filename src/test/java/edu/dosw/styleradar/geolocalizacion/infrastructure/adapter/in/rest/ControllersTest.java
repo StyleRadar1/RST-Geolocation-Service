@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -30,7 +31,7 @@ class ControllersTest {
     void listaLosAlmacenes() {
         // Arrange
         ConsultarAlmacenesUseCase useCase = mock(ConsultarAlmacenesUseCase.class);
-        Almacen almacen = new Almacen(UUID.randomUUID(), "Calle 85", null, new Ubicacion(4.66, -74.05));
+        Almacen almacen = new Almacen(UUID.randomUUID(), "Calle 85", null, new Ubicacion(4.66, -74.05), "900555777-1");
         when(useCase.consultar(null, 4.66, -74.05, 5)).thenReturn(List.of(almacen));
 
         // Act
@@ -39,6 +40,7 @@ class ControllersTest {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).extracting(AlmacenResponse::nombre).containsExactly("Calle 85");
+        assertThat(response.getBody()).extracting(AlmacenResponse::nit).containsExactly("900555777-1");
         assertThat(response.getBody()).extracting(AlmacenResponse::distanciaKm).containsExactly(0.0);
     }
 
@@ -76,12 +78,13 @@ class ControllersTest {
     @Test
     void sinUbicacionListaTodosSinDistanciaYConSoloUnaCoordenadaEsInvalido() {
         ConsultarAlmacenesUseCase useCase = mock(ConsultarAlmacenesUseCase.class);
-        Almacen almacen = new Almacen(UUID.randomUUID(), "Calle 85", null, new Ubicacion(4.66, -74.05));
+        Almacen almacen = new Almacen(UUID.randomUUID(), "Calle 85", null, new Ubicacion(4.66, -74.05), "900555777-1");
         when(useCase.todos(null)).thenReturn(List.of(almacen));
         AlmacenController controller = new AlmacenController(useCase);
 
         assertThat(controller.listar(null, null, 5, null).getBody())
-                .extracting(AlmacenResponse::distanciaKm).containsExactly((Double) null);
+                .extracting(AlmacenResponse::distanciaKm, AlmacenResponse::nit)
+                .containsExactly(tuple(null, "900555777-1"));
         assertThatThrownBy(() -> controller.listar(4.66, null, 5, null)).isInstanceOf(ParametroInvalidoException.class);
     }
 }

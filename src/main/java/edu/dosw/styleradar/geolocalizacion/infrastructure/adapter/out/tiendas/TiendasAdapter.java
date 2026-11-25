@@ -34,7 +34,7 @@ public class TiendasAdapter implements TiendasPort {
             if (respuesta == null || respuesta.content() == null) {
                 break;
             }
-            respuesta.content().forEach(a -> almacenes.add(new AlmacenTienda(idAlmacen(a.nit()), a.nombreComercial(),
+            respuesta.content().forEach(a -> almacenes.add(new AlmacenTienda(idAlmacen(a.nit()), a.nit(), a.nombreComercial(),
                     categoria(a.categorias()), a.latitud(), a.longitud())));
         } while (!respuesta.last() && pagina < MAXIMO_PAGINAS);
         return almacenes;

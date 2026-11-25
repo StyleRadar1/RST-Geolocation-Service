@@ -9,7 +9,7 @@ public interface TiendasPort {
 
     List<FundacionTienda> fundaciones();
 
-    record AlmacenTienda(UUID id, String nombre, String categoria, Double latitud, Double longitud) {
+    record AlmacenTienda(UUID id, String nit, String nombre, String categoria, Double latitud, Double longitud) {
     }
 
     record FundacionTienda(UUID id, String nombre, Double latitud, Double longitud) {

@@ -15,7 +15,8 @@ public interface AlmacenApi {
 
     @Operation(summary = "List map stores",
             description = "Returns the allied stores within the radius, nearest first, with their distanciaKm. "
-                    + "If categoriaId is sent, only the stores of that category (SR-RF-17, SR-RF-18).")
+                    + "If categoriaId is sent, only the stores of that category (SR-RF-17, SR-RF-18). "
+                    + "Each store includes its nit to open the store profile in ms-tiendas.")
     @ApiResponse(responseCode = "200", description = "Store list")
     @ApiResponse(responseCode = "400", description = "Only one of lat and lng was sent, a value is out of range, radioKm is not valid or categoriaId is not a UUID")
     ResponseEntity<List<AlmacenResponse>> listar(

@@ -26,7 +26,7 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
     }
 
     @Override
-    public Almacen guardarAlmacen(UUID id, String nombre, String categoria, Ubicacion ubicacion) {
+    public Almacen guardarAlmacen(UUID id, String nit, String nombre, String categoria, Ubicacion ubicacion) {
         validar(id, nombre, ubicacion);
         if (categoria == null || categoria.isBlank()) {
             throw new DomainException("El almacén debe tener una categoría", "EVENTO_INVALIDO");
@@ -34,7 +34,8 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
         String nombreCategoria = categoria.trim();
         CategoriaAlmacen categoriaAlmacen = almacenRepository.findCategoriaByNombre(nombreCategoria)
                 .orElseGet(() -> new CategoriaAlmacen(UUID.randomUUID(), nombreCategoria));
-        return almacenRepository.save(new Almacen(id, nombre.trim(), categoriaAlmacen, ubicacion));
+        String nitLimpio = nit == null || nit.isBlank() ? null : nit.trim();
+        return almacenRepository.save(new Almacen(id, nombre.trim(), categoriaAlmacen, ubicacion, nitLimpio));
     }
 
     @Override
@@ -50,7 +51,7 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
         int descartados = 0;
         for (TiendasPort.AlmacenTienda a : tiendas.almacenes()) {
             try {
-                guardarAlmacen(a.id(), a.nombre(), a.categoria(), ubicacion(a.latitud(), a.longitud()));
+                guardarAlmacen(a.id(), a.nit(), a.nombre(), a.categoria(), ubicacion(a.latitud(), a.longitud()));
                 almacenes++;
             } catch (DomainException e) {
                 descartados++;

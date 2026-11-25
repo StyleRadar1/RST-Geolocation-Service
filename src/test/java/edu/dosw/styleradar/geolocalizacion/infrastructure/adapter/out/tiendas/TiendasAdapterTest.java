@@ -30,6 +30,7 @@ class TiendasAdapterTest {
 
         assertThat(almacenes).hasSize(2);
         assertThat(almacenes.get(0).id()).isEqualTo(TiendasAdapter.idAlmacen("900123456-1"));
+        assertThat(almacenes.get(0).nit()).isEqualTo("900123456-1");
         assertThat(almacenes.get(0).categoria()).isEqualTo("Vintage");
         assertThat(almacenes.get(1).categoria()).isEqualTo("Deportivo");
         verify(client).almacenes(1, TiendasAdapter.TAMANO_PAGINA);

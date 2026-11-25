@@ -22,11 +22,12 @@ class MapperInTest {
     void mapeaAlmacenConCategoria() {
         UUID id = UUID.randomUUID();
         UUID categoriaId = UUID.randomUUID();
-        Almacen almacen = new Almacen(id, "Calle 85", new CategoriaAlmacen(categoriaId, "Urbano"), new Ubicacion(4.66, -74.05));
+        Almacen almacen = new Almacen(id, "Calle 85", new CategoriaAlmacen(categoriaId, "Urbano"), new Ubicacion(4.66, -74.05),
+                "900555777-1");
 
         AlmacenResponse response = AlmacenMapperIn.toResponse(almacen, new Ubicacion(4.66, -74.05));
 
-        assertThat(response).isEqualTo(new AlmacenResponse(id, "Calle 85", categoriaId, "Urbano", 4.66, -74.05, 0.0));
+        assertThat(response).isEqualTo(new AlmacenResponse(id, "900555777-1", "Calle 85", categoriaId, "Urbano", 4.66, -74.05, 0.0));
     }
 
     @Test

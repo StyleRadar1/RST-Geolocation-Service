@@ -2,7 +2,12 @@ package edu.dosw.styleradar.geolocalizacion.domain.model;
 
 import java.util.UUID;
 
-public record Almacen(UUID id, String nombre, CategoriaAlmacen categoria, Ubicacion ubicacion) {
+// nit: id del almacén en ms-tiendas (/stores/{nit}); puede ser null en registros viejos
+public record Almacen(UUID id, String nombre, CategoriaAlmacen categoria, Ubicacion ubicacion, String nit) {
+
+    public Almacen(UUID id, String nombre, CategoriaAlmacen categoria, Ubicacion ubicacion) {
+        this(id, nombre, categoria, ubicacion, null);
+    }
 
     public boolean perteneceA(UUID categoriaId) {
         return categoria != null && categoria.id().equals(categoriaId);
