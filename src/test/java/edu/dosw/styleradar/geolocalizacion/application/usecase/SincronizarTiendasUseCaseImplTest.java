@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -95,7 +96,34 @@ class SincronizarTiendasUseCaseImplTest {
 
         SincronizarTiendasUseCase.CargaTiendas carga = useCase.cargarDesdeTiendas();
 
-        assertThat(carga).isEqualTo(new SincronizarTiendasUseCase.CargaTiendas(1, 1, 3));
+        assertThat(carga).isEqualTo(new SincronizarTiendasUseCase.CargaTiendas(1, 1, 3, 0));
+    }
+
+    @Test
+    void retiraLosAlmacenesQueTiendasYaNoLista() {
+        CategoriaAlmacen casual = new CategoriaAlmacen(UUID.randomUUID(), "Casual");
+        Almacen vigente = new Almacen(UUID.randomUUID(), "Vigente", casual, ubicacion, "900-1");
+        Almacen retirado = new Almacen(UUID.randomUUID(), "Retirado", casual, ubicacion, "900-2");
+        Almacen sinNit = new Almacen(UUID.randomUUID(), "Ejemplo", casual, ubicacion);
+        when(almacenes.findCategoriaByNombre("Casual")).thenReturn(Optional.of(casual));
+        when(almacenes.findAll()).thenReturn(List.of(vigente, retirado, sinNit));
+        when(tiendas.almacenes()).thenReturn(List.of(
+                new TiendasPort.AlmacenTienda(vigente.id(), "900-1", "Vigente", "Casual", 4.65, -74.06)));
+
+        SincronizarTiendasUseCase.CargaTiendas carga = useCase.cargarDesdeTiendas();
+
+        assertThat(carga.retirados()).isEqualTo(1);
+        verify(almacenes).deleteById(retirado.id());
+        verify(almacenes, never()).deleteById(vigente.id());
+        verify(almacenes, never()).deleteById(sinNit.id());
+    }
+
+    @Test
+    void conUnaListaVaciaNoRetiraNada() {
+        when(tiendas.almacenes()).thenReturn(List.of());
+
+        assertThat(useCase.cargarDesdeTiendas().retirados()).isZero();
+        verify(almacenes, never()).deleteById(any());
     }
 
     @Test

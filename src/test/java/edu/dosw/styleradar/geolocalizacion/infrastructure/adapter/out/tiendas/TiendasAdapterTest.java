@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,15 @@ class TiendasAdapterTest {
         assertThat(almacenes.get(0).categoria()).isEqualTo("Vintage");
         assertThat(almacenes.get(1).categoria()).isEqualTo("Deportivo");
         verify(client).almacenes(1, TiendasAdapter.TAMANO_PAGINA);
+    }
+
+    @Test
+    void fallaSiLaListaQuedaIncompleta() {
+        AlmacenTiendasResponse atelier = new AlmacenTiendasResponse("900123456-1", "Atelier", 4.65, -74.06, Set.of("VINTAGE"));
+        when(client.almacenes(0, TiendasAdapter.TAMANO_PAGINA)).thenReturn(new PaginaTiendasResponse<>(List.of(atelier), false));
+        when(client.almacenes(1, TiendasAdapter.TAMANO_PAGINA)).thenReturn(null);
+
+        assertThatThrownBy(adapter::almacenes).isInstanceOf(IllegalStateException.class);
     }
 
     @Test

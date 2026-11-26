@@ -1,5 +1,9 @@
 package edu.dosw.styleradar.geolocalizacion.application.usecase;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import edu.dosw.styleradar.geolocalizacion.domain.exception.DomainException;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Almacen;
 import edu.dosw.styleradar.geolocalizacion.domain.model.CategoriaAlmacen;
@@ -49,7 +53,8 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
         int almacenes = 0;
         int fundaciones = 0;
         int descartados = 0;
-        for (TiendasPort.AlmacenTienda a : tiendas.almacenes()) {
+        List<TiendasPort.AlmacenTienda> vigentes = tiendas.almacenes();
+        for (TiendasPort.AlmacenTienda a : vigentes) {
             try {
                 guardarAlmacen(a.id(), a.nit(), a.nombre(), a.categoria(), ubicacion(a.latitud(), a.longitud()));
                 almacenes++;
@@ -65,7 +70,25 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
                 descartados++;
             }
         }
-        return new CargaTiendas(almacenes, fundaciones, descartados);
+        return new CargaTiendas(almacenes, fundaciones, descartados, retirarNoVigentes(vigentes));
+    }
+
+    // ms-tiendas solo lista almacenes aprobados: el que ya no aparece (eliminado o sin verificacion) sale del mapa.
+    // Con una lista vacia no se borra nada, y los registros sin NIT (datos de ejemplo o antiguos) se conservan.
+    private int retirarNoVigentes(List<TiendasPort.AlmacenTienda> vigentes) {
+        Set<String> nits = vigentes.stream()
+                .map(TiendasPort.AlmacenTienda::nit)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .collect(Collectors.toSet());
+        if (nits.isEmpty()) {
+            return 0;
+        }
+        List<Almacen> sobrantes = almacenRepository.findAll().stream()
+                .filter(a -> a.nit() != null && !nits.contains(a.nit().trim()))
+                .toList();
+        sobrantes.forEach(a -> almacenRepository.deleteById(a.id()));
+        return sobrantes.size();
     }
 
     @Override

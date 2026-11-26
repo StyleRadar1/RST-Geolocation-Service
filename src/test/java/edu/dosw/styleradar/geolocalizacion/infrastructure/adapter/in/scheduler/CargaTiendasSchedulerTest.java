@@ -15,7 +15,7 @@ class CargaTiendasSchedulerTest {
 
     @Test
     void ejecutaLaCarga() {
-        when(useCase.cargarDesdeTiendas()).thenReturn(new SincronizarTiendasUseCase.CargaTiendas(2, 1, 0));
+        when(useCase.cargarDesdeTiendas()).thenReturn(new SincronizarTiendasUseCase.CargaTiendas(2, 1, 0, 0));
 
         scheduler.cargar();
 

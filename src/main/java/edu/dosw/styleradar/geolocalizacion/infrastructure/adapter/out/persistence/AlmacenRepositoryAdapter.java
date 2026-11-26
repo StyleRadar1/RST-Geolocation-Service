@@ -44,4 +44,9 @@ public class AlmacenRepositoryAdapter implements AlmacenRepositoryPort {
         categoriaRepository.save(AlmacenMapperOut.toEntity(almacen.categoria()));
         return AlmacenMapperOut.toDomain(jpaRepository.save(AlmacenMapperOut.toEntity(almacen)));
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
+    }
 }

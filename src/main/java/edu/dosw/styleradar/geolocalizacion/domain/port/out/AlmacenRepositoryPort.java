@@ -16,4 +16,6 @@ public interface AlmacenRepositoryPort {
     Optional<CategoriaAlmacen> findCategoriaByNombre(String nombre);
 
     Almacen save(Almacen almacen);
+
+    void deleteById(UUID id);
 }
