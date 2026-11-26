@@ -15,6 +15,7 @@ Las variables se definen en `.env`, que no se versiona. La plantilla `.env.examp
 | `PAGOS_URL` | URL de `ms-pagos` con `/api/v1` | `http://localhost:8400/api/v1` (QA: la del Container App de pagos) |
 | `TIENDAS_CARGA_HABILITADA` | Activa la carga periódica desde `ms-tiendas` | `true` |
 | `TIENDAS_CARGA_INTERVALO` | Cada cuánto se carga desde `ms-tiendas` | `PT30M` |
+| `TIENDAS_CARGA_REINTENTO` | Cada cuánto se reintenta mientras la última carga haya fallado | `PT2M` |
 
 ---
 

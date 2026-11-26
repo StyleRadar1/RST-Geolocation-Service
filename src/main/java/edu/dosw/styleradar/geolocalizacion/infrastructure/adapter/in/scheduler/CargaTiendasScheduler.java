@@ -14,6 +14,7 @@ public class CargaTiendasScheduler {
     private static final Logger log = LoggerFactory.getLogger(CargaTiendasScheduler.class);
 
     private final SincronizarTiendasUseCase sincronizar;
+    private volatile boolean ultimaCargaFallo;
 
     public CargaTiendasScheduler(SincronizarTiendasUseCase sincronizar) {
         this.sincronizar = sincronizar;
@@ -26,8 +27,19 @@ public class CargaTiendasScheduler {
             SincronizarTiendasUseCase.CargaTiendas carga = sincronizar.cargarDesdeTiendas();
             log.info("Carga desde ms-tiendas: {} almacenes, {} fundaciones, {} descartados, {} retirados",
                     carga.almacenes(), carga.fundaciones(), carga.descartados(), carga.retirados());
+            ultimaCargaFallo = false;
         } catch (RuntimeException e) {
+            ultimaCargaFallo = true;
             log.warn("No se pudo cargar los almacenes y fundaciones de ms-tiendas: {}", e.getMessage());
+        }
+    }
+
+    // Si la ultima carga fallo (por ejemplo, un servicio arrancando en frio), no se espera al siguiente ciclo completo
+    @Scheduled(initialDelayString = "${tiendas.carga.reintento:PT2M}",
+            fixedDelayString = "${tiendas.carga.reintento:PT2M}")
+    public void reintentar() {
+        if (ultimaCargaFallo) {
+            cargar();
         }
     }
 }
