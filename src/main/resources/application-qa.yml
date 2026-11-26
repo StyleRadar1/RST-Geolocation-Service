@@ -1,2 +1,7 @@
+# Solo se muestran en el mapa las tiendas con la suscripcion al dia
+pagos:
+  url: ${PAGOS_URL:https://ca-styleradar-pagos-juangv1.lemonplant-91cfa5ac.northcentralus.azurecontainerapps.io/api/v1}
+  filtro-habilitado: ${PAGOS_FILTRO_HABILITADO:true}
+
 tiendas:
   url: ${TIENDAS_URL:https://styleradar-tiendas-qa.azurewebsites.net/api/v1}

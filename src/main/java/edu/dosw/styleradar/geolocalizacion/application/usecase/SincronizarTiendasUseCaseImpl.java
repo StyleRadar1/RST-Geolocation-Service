@@ -1,7 +1,9 @@
 package edu.dosw.styleradar.geolocalizacion.application.usecase;
 
 import java.util.List;
+import edu.dosw.styleradar.geolocalizacion.domain.port.out.PagosPort;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import edu.dosw.styleradar.geolocalizacion.domain.exception.DomainException;
@@ -21,12 +23,14 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
     private final AlmacenRepositoryPort almacenRepository;
     private final FundacionRepositoryPort fundacionRepository;
     private final TiendasPort tiendas;
+    private final PagosPort pagos;
 
     public SincronizarTiendasUseCaseImpl(AlmacenRepositoryPort almacenRepository, FundacionRepositoryPort fundacionRepository,
-                                         TiendasPort tiendas) {
+                                         TiendasPort tiendas, PagosPort pagos) {
         this.almacenRepository = almacenRepository;
         this.fundacionRepository = fundacionRepository;
         this.tiendas = tiendas;
+        this.pagos = pagos;
     }
 
     @Override
@@ -53,8 +57,10 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
         int almacenes = 0;
         int fundaciones = 0;
         int descartados = 0;
-        List<TiendasPort.AlmacenTienda> vigentes = tiendas.almacenes();
-        for (TiendasPort.AlmacenTienda a : vigentes) {
+        List<TiendasPort.AlmacenTienda> aprobados = tiendas.almacenes();
+        // Se consulta antes de guardar nada: si ms-pagos falla, el mapa queda como estaba
+        List<TiendasPort.AlmacenTienda> visibles = conSuscripcionAlDia(aprobados);
+        for (TiendasPort.AlmacenTienda a : visibles) {
             try {
                 guardarAlmacen(a.id(), a.nit(), a.nombre(), a.categoria(), ubicacion(a.latitud(), a.longitud()));
                 almacenes++;
@@ -70,20 +76,36 @@ public class SincronizarTiendasUseCaseImpl implements SincronizarTiendasUseCase 
                 descartados++;
             }
         }
-        return new CargaTiendas(almacenes, fundaciones, descartados, retirarNoVigentes(vigentes));
+        return new CargaTiendas(almacenes, fundaciones, descartados, retirarNoVisibles(aprobados, visibles));
     }
 
-    // ms-tiendas solo lista almacenes aprobados: el que ya no aparece (eliminado o sin verificacion) sale del mapa.
-    // Con una lista vacia no se borra nada, y los registros sin NIT (datos de ejemplo o antiguos) se conservan.
-    private int retirarNoVigentes(List<TiendasPort.AlmacenTienda> vigentes) {
-        Set<String> nits = vigentes.stream()
+    private List<TiendasPort.AlmacenTienda> conSuscripcionAlDia(List<TiendasPort.AlmacenTienda> aprobados) {
+        Optional<Set<String>> alDia = pagos.nitsAlDia()
+                .map(nits -> nits.stream().map(SincronizarTiendasUseCaseImpl::sinDigito).collect(Collectors.toSet()));
+        if (alDia.isEmpty()) {
+            return aprobados;
+        }
+        return aprobados.stream()
+                .filter(a -> a.nit() != null && alDia.get().contains(sinDigito(a.nit())))
+                .toList();
+    }
+
+    // El NIT puede venir con o sin digito de verificacion (900555777-1 o 900555777)
+    private static String sinDigito(String nit) {
+        return nit.trim().replaceAll("-\\d$", "");
+    }
+
+    // Sale del mapa el almacen que ms-tiendas ya no lista (eliminado o sin verificacion) o sin suscripcion al dia.
+    // Si ms-tiendas no entrega almacenes no se borra nada, y los registros sin NIT (datos de ejemplo) se conservan.
+    private int retirarNoVisibles(List<TiendasPort.AlmacenTienda> aprobados, List<TiendasPort.AlmacenTienda> visibles) {
+        if (aprobados.stream().noneMatch(a -> a.nit() != null)) {
+            return 0;
+        }
+        Set<String> nits = visibles.stream()
                 .map(TiendasPort.AlmacenTienda::nit)
                 .filter(Objects::nonNull)
                 .map(String::trim)
                 .collect(Collectors.toSet());
-        if (nits.isEmpty()) {
-            return 0;
-        }
         List<Almacen> sobrantes = almacenRepository.findAll().stream()
                 .filter(a -> a.nit() != null && !nits.contains(a.nit().trim()))
                 .toList();

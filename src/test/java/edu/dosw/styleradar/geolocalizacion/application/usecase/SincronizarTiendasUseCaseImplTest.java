@@ -1,5 +1,6 @@
 package edu.dosw.styleradar.geolocalizacion.application.usecase;
 
+import edu.dosw.styleradar.geolocalizacion.domain.port.out.PagosPort;
 import edu.dosw.styleradar.geolocalizacion.domain.exception.DomainException;
 import edu.dosw.styleradar.geolocalizacion.domain.model.Almacen;
 import edu.dosw.styleradar.geolocalizacion.domain.model.CategoriaAlmacen;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +32,8 @@ class SincronizarTiendasUseCaseImplTest {
     private final AlmacenRepositoryPort almacenes = mock(AlmacenRepositoryPort.class);
     private final FundacionRepositoryPort fundaciones = mock(FundacionRepositoryPort.class);
     private final TiendasPort tiendas = mock(TiendasPort.class);
-    private final SincronizarTiendasUseCaseImpl useCase = new SincronizarTiendasUseCaseImpl(almacenes, fundaciones, tiendas);
+    private final PagosPort pagos = mock(PagosPort.class);
+    private final SincronizarTiendasUseCaseImpl useCase = new SincronizarTiendasUseCaseImpl(almacenes, fundaciones, tiendas, pagos);
     private final Ubicacion ubicacion = new Ubicacion(4.67, -74.05);
 
     @BeforeEach
@@ -116,6 +119,50 @@ class SincronizarTiendasUseCaseImplTest {
         verify(almacenes).deleteById(retirado.id());
         verify(almacenes, never()).deleteById(vigente.id());
         verify(almacenes, never()).deleteById(sinNit.id());
+    }
+
+    @Test
+    void soloMuestraLasTiendasConSuscripcionAlDia() {
+        CategoriaAlmacen casual = new CategoriaAlmacen(UUID.randomUUID(), "Casual");
+        Almacen alDia = new Almacen(UUID.randomUUID(), "Al dia", casual, ubicacion, "900555001-1");
+        Almacen sinPago = new Almacen(UUID.randomUUID(), "Sin pago", casual, ubicacion, "900555002-2");
+        when(almacenes.findCategoriaByNombre("Casual")).thenReturn(Optional.of(casual));
+        when(almacenes.findAll()).thenReturn(List.of(alDia, sinPago));
+        when(tiendas.almacenes()).thenReturn(List.of(
+                new TiendasPort.AlmacenTienda(alDia.id(), "900555001-1", "Al dia", "Casual", 4.65, -74.06),
+                new TiendasPort.AlmacenTienda(sinPago.id(), "900555002-2", "Sin pago", "Casual", 4.65, -74.06)));
+        when(pagos.nitsAlDia()).thenReturn(Optional.of(Set.of("900555001")));
+
+        SincronizarTiendasUseCase.CargaTiendas carga = useCase.cargarDesdeTiendas();
+
+        assertThat(carga.almacenes()).isEqualTo(1);
+        assertThat(carga.retirados()).isEqualTo(1);
+        verify(almacenes).deleteById(sinPago.id());
+        verify(almacenes, never()).deleteById(alDia.id());
+    }
+
+    @Test
+    void siNadieHaPagadoElMapaQuedaSinTiendas() {
+        CategoriaAlmacen casual = new CategoriaAlmacen(UUID.randomUUID(), "Casual");
+        Almacen sinPago = new Almacen(UUID.randomUUID(), "Sin pago", casual, ubicacion, "900555002-2");
+        when(almacenes.findAll()).thenReturn(List.of(sinPago));
+        when(tiendas.almacenes()).thenReturn(List.of(
+                new TiendasPort.AlmacenTienda(sinPago.id(), "900555002-2", "Sin pago", "Casual", 4.65, -74.06)));
+        when(pagos.nitsAlDia()).thenReturn(Optional.of(Set.of()));
+
+        assertThat(useCase.cargarDesdeTiendas().retirados()).isEqualTo(1);
+        verify(almacenes, never()).save(any());
+    }
+
+    @Test
+    void siPagosFallaNoCambiaElMapa() {
+        when(tiendas.almacenes()).thenReturn(List.of(
+                new TiendasPort.AlmacenTienda(UUID.randomUUID(), "900555002-2", "Tienda", "Casual", 4.65, -74.06)));
+        when(pagos.nitsAlDia()).thenThrow(new IllegalStateException("sin respuesta"));
+
+        assertThatThrownBy(useCase::cargarDesdeTiendas).isInstanceOf(IllegalStateException.class);
+        verify(almacenes, never()).save(any());
+        verify(almacenes, never()).deleteById(any());
     }
 
     @Test
