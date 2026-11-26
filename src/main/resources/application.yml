@@ -77,6 +77,7 @@ tiendas:
   carga:
     habilitada: ${TIENDAS_CARGA_HABILITADA:true}
     intervalo: ${TIENDAS_CARGA_INTERVALO:PT30M}
+    reintento: ${TIENDAS_CARGA_REINTENTO:PT2M}
 
 springdoc:
   api-docs:

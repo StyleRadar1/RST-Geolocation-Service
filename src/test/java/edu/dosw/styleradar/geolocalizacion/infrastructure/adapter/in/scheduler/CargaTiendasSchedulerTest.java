@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,5 +29,21 @@ class CargaTiendasSchedulerTest {
         when(useCase.cargarDesdeTiendas()).thenThrow(new IllegalStateException("ms-tiendas no responde"));
 
         assertThatCode(scheduler::cargar).doesNotThrowAnyException();
+    }
+
+    @Test
+    void reintentaSoloDespuesDeUnaCargaFallida() {
+        when(useCase.cargarDesdeTiendas())
+                .thenThrow(new IllegalStateException("ms-pagos no responde"))
+                .thenReturn(new SincronizarTiendasUseCase.CargaTiendas(2, 1, 0, 0));
+
+        scheduler.reintentar();
+        verifyNoInteractions(useCase);
+
+        scheduler.cargar();
+        scheduler.reintentar();
+        scheduler.reintentar();
+
+        verify(useCase, times(2)).cargarDesdeTiendas();
     }
 }

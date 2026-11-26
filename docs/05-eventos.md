@@ -4,7 +4,7 @@ El servicio no publica eventos. Consume por **RabbitMQ** (exchange `styleradar.e
 
 ### Carga desde ms-tiendas por Feign
 
-Como `ms-tiendas` no publica eventos de almacenes, el servicio los carga por HTTP con `TiendasClient` (Feign) 20 segundos después de arrancar y luego cada 30 minutos. En cada carga también retira del mapa los almacenes que `ms-tiendas` ya no lista (eliminados o sin verificación). Si la lista llega vacía o incompleta no borra nada. Con `PAGOS_FILTRO_HABILITADO=true` (QA) solo quedan en el mapa las tiendas que `ms-pagos` reporta con suscripción activa y vigente (`GET /subscriptions/stores/up-to-date`); si `ms-pagos` no responde, el mapa queda como estaba:
+Como `ms-tiendas` no publica eventos de almacenes, el servicio los carga por HTTP con `TiendasClient` (Feign) 20 segundos después de arrancar y luego cada 30 minutos. En cada carga también retira del mapa los almacenes que `ms-tiendas` ya no lista (eliminados o sin verificación). Si la lista llega vacía o incompleta no borra nada. Con `PAGOS_FILTRO_HABILITADO=true` (QA) solo quedan en el mapa las tiendas que `ms-pagos` reporta con suscripción activa y vigente (`GET /subscriptions/stores/up-to-date`); si `ms-pagos` no responde, el mapa queda como estaba. Tras una carga fallida se reintenta cada 2 minutos hasta que una funcione:
 
 | Endpoint de ms-tiendas | Qué se toma |
 | :--- | :--- |
