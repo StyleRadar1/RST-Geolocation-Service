@@ -24,8 +24,8 @@ public class CargaTiendasScheduler {
     public void cargar() {
         try {
             SincronizarTiendasUseCase.CargaTiendas carga = sincronizar.cargarDesdeTiendas();
-            log.info("Carga desde ms-tiendas: {} almacenes, {} fundaciones, {} descartados",
-                    carga.almacenes(), carga.fundaciones(), carga.descartados());
+            log.info("Carga desde ms-tiendas: {} almacenes, {} fundaciones, {} descartados, {} retirados",
+                    carga.almacenes(), carga.fundaciones(), carga.descartados(), carga.retirados());
         } catch (RuntimeException e) {
             log.warn("No se pudo cargar los almacenes y fundaciones de ms-tiendas: {}", e.getMessage());
         }

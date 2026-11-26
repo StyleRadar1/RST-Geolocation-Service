@@ -11,6 +11,8 @@ Las variables se definen en `.env`, que no se versiona. La plantilla `.env.examp
 | `DB_USER` | Usuario de PostgreSQL | `postgres` |
 | `DB_PASSWORD` | Contraseña de PostgreSQL | — |
 | `TIENDAS_URL` | URL de `ms-tiendas` con `/api/v1` | `http://localhost:8140/api/v1` (QA y PROD: `styleradar-tiendas-<ambiente>.azurewebsites.net/api/v1`) |
+| `PAGOS_FILTRO_HABILITADO` | Muestra en el mapa solo las tiendas con suscripción al día | `false` (QA: `true`) |
+| `PAGOS_URL` | URL de `ms-pagos` con `/api/v1` | `http://localhost:8400/api/v1` (QA: la del Container App de pagos) |
 | `TIENDAS_CARGA_HABILITADA` | Activa la carga periódica desde `ms-tiendas` | `true` |
 | `TIENDAS_CARGA_INTERVALO` | Cada cuánto se carga desde `ms-tiendas` | `PT30M` |
 

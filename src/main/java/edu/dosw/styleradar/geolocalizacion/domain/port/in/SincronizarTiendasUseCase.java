@@ -16,6 +16,6 @@ public interface SincronizarTiendasUseCase {
 
     void retirarFundacion(UUID id);
 
-    record CargaTiendas(int almacenes, int fundaciones, int descartados) {
+    record CargaTiendas(int almacenes, int fundaciones, int descartados, int retirados) {
     }
 }

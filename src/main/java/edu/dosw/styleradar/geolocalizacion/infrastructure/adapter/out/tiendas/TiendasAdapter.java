@@ -32,11 +32,17 @@ public class TiendasAdapter implements TiendasPort {
         do {
             respuesta = client.almacenes(pagina++, TAMANO_PAGINA);
             if (respuesta == null || respuesta.content() == null) {
-                break;
+                if (almacenes.isEmpty()) {
+                    return almacenes;
+                }
+                throw new IllegalStateException("ms-tiendas entrego una lista de almacenes incompleta");
             }
             respuesta.content().forEach(a -> almacenes.add(new AlmacenTienda(idAlmacen(a.nit()), a.nit(), a.nombreComercial(),
                     categoria(a.categorias()), a.latitud(), a.longitud())));
         } while (!respuesta.last() && pagina < MAXIMO_PAGINAS);
+        if (!respuesta.last()) {
+            throw new IllegalStateException("ms-tiendas supera el maximo de paginas de almacenes");
+        }
         return almacenes;
     }
 

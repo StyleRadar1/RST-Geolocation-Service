@@ -1,5 +1,6 @@
 package edu.dosw.styleradar.geolocalizacion.infrastructure.config;
 
+import edu.dosw.styleradar.geolocalizacion.domain.port.out.PagosPort;
 import edu.dosw.styleradar.geolocalizacion.application.usecase.CalcularDistanciaUseCaseImpl;
 import edu.dosw.styleradar.geolocalizacion.application.usecase.ConsultarAlmacenesUseCaseImpl;
 import edu.dosw.styleradar.geolocalizacion.application.usecase.ConsultarFundacionesCercanasUseCaseImpl;
@@ -30,8 +31,8 @@ public class BeanConfig {
     @Bean
     public SincronizarTiendasUseCase sincronizarTiendasUseCase(AlmacenRepositoryPort almacenRepository,
                                                                FundacionRepositoryPort fundacionRepository,
-                                                               TiendasPort tiendas) {
-        return new SincronizarTiendasUseCaseImpl(almacenRepository, fundacionRepository, tiendas);
+                                                               TiendasPort tiendas, PagosPort pagos) {
+        return new SincronizarTiendasUseCaseImpl(almacenRepository, fundacionRepository, tiendas, pagos);
     }
 
     @Bean
