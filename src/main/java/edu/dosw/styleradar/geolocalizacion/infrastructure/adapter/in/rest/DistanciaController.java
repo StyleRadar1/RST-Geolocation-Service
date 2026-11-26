@@ -23,10 +23,14 @@ public class DistanciaController implements DistanciaApi {
     }
 
     @Override
-    @GetMapping("/almacenes/{id}/distancia")
+    @GetMapping("/stores/{id}/distance")
     public ResponseEntity<DistanciaResponse> calcular(@PathVariable UUID id,
-                                                      @RequestParam double lat,
-                                                      @RequestParam double lng) {
-        return ResponseEntity.ok(AlmacenMapperIn.toResponse(id, calcularDistancia.calcular(id, new Ubicacion(lat, lng))));
+                                                      @RequestParam(required = false) Double lat,
+                                                      @RequestParam(required = false) Double lng,
+                                                      @RequestParam(required = false) Double latitud,
+                                                      @RequestParam(required = false) Double longitud,
+                                                      @RequestParam(required = false) Double lon) {
+        Ubicacion usuario = CoordenadasRequest.resolverObligatoria(lat, latitud, lng, longitud, lon);
+        return ResponseEntity.ok(AlmacenMapperIn.toResponse(id, calcularDistancia.calcular(id, usuario)));
     }
 }

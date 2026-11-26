@@ -2,7 +2,7 @@
 
 ### Categorías de almacén (SR-RF-18)
 
-Se crean en todos los ambientes con la migración `V4__categorias_unificadas.sql`. `GET /api/v1/almacenes` recibe la ubicación del usuario (`lat`, `lng`) y un `radioKm` opcional (por defecto 5, máximo 20), y devuelve los almacenes dentro del radio del más cercano al más lejano. Si no llegan `lat` ni `lng`, devuelve todos los almacenes ordenados por nombre y sin `distanciaKm`; si llega solo uno, responde 400. El filtro `categoriaId` usa estos IDs, y cada almacén devuelve su `categoriaId`, `categoria` y `distanciaKm`.
+Se crean en todos los ambientes con la migración `V4__categorias_unificadas.sql`. `GET /api/v1/stores/nearby` recibe la ubicación del usuario (`lat`, `lng`) y un `radioKm` opcional (por defecto 5, máximo 20), y devuelve los almacenes dentro del radio del más cercano al más lejano. Si no llegan `lat` ni `lng`, devuelve todos los almacenes ordenados por nombre y sin `distanciaKm`; si llega solo uno, responde 400. El filtro `categoriaId` usa estos IDs, y cada almacén devuelve su `categoriaId`, `categoria` y `distanciaKm`.
 
 | Categoría | categoriaId |
 | :--- | :--- |
@@ -29,7 +29,7 @@ Todos los errores responden `application/problem+json` (RFC 7807) con `type`, `t
 
 | HTTP | `code` | Cuándo |
 | :---: | :--- | :--- |
-| 400 | `PARAMETRO_INVALIDO` | Falta `lat` o `lng`, no son números, están fuera de rango en `/almacenes`, `radioKm` no es válido o `categoriaId` no es un UUID |
+| 400 | `PARAMETRO_INVALIDO` | Falta `lat` o `lng`, no son números, están fuera de rango en `/stores/nearby`, `radioKm` no es válido o `categoriaId` no es un UUID |
 | 404 | `ALMACEN_NO_ENCONTRADO` | El almacén no existe |
 | 404 | `RUTA_NO_ENCONTRADA` | La ruta no existe |
 | 422 | `COORDENADA_FUERA_DE_RANGO` | La latitud no está entre -90 y 90 o la longitud entre -180 y 180 |
@@ -58,9 +58,9 @@ Todos los errores responden `application/problem+json` (RFC 7807) con `type`, `t
 
 | Método | Endpoint | Descripción | Rol Requerido | Códigos HTTP |
 | :---: | :--- | :--- | :--- | :---: |
-| `GET` | `/api/v1/almacenes` | Listar los almacenes aliados dentro de `radioKm` (por defecto 5, máximo 20) de la ubicación del usuario (`lat`, `lng`), del más cercano al más lejano y con `distanciaKm`; con `categoriaId` opcional filtra por categoría; sin `lat` ni `lng` lista todos por nombre (SR-RF-17 y 18) | Público | `200`, `400` |
-| `GET` | `/api/v1/almacenes/{id}/distancia` | Calcular en kilómetros la distancia entre la ubicación del usuario (`lat`, `lng`) y el almacén (SR-RF-21) | Público | `200`, `400`, `404`, `422` |
-| `GET` | `/api/v1/fundaciones/cercanas` | Consultar las fundaciones aliadas a menos de `radioKm` (por defecto 5) de la ubicación `lat`, `lng` (SR-RF-43) | Público | `200`, `400`, `422` |
+| `GET` | `/api/v1/stores/nearby` | Listar los almacenes aliados dentro de `radioKm` (por defecto 5, máximo 20) de la ubicación del usuario (`lat`, `lng`), del más cercano al más lejano y con `distanciaKm`; con `categoriaId` opcional filtra por categoría; sin `lat` ni `lng` lista todos por nombre (SR-RF-17 y 18) | Público | `200`, `400` |
+| `GET` | `/api/v1/stores/{id}/distance` | Calcular en kilómetros la distancia entre la ubicación del usuario (`lat`, `lng`) y el almacén (SR-RF-21) | Público | `200`, `400`, `404`, `422` |
+| `GET` | `/api/v1/foundations/nearby` | Consultar las fundaciones aliadas a menos de `radioKm` (por defecto 5) de la ubicación `lat`, `lng` (SR-RF-43) | Público | `200`, `400`, `422` |
 | `GET` | `/api/v1/health` | Estado del servicio | Público | `200` |
 
 ---

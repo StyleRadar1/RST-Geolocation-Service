@@ -55,14 +55,14 @@ class GeolocalizacionIntegrationTest {
 
     @Test
     void listaLosAlmacenesDeLaBase() throws Exception {
-        mockMvc.perform(get("/almacenes").param("lat", "4.6762").param("lng", "-74.0481").param("radioKm", "20"))
+        mockMvc.perform(get("/stores/nearby").param("lat", "4.6762").param("lng", "-74.0481").param("radioKm", "20"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*].nombre", hasItem("Calle 85 Store")));
     }
 
     @Test
     void filtraAlmacenesPorCategoria() throws Exception {
-        mockMvc.perform(get("/almacenes").param("lat", "4.6762").param("lng", "-74.0481").param("categoriaId", "22222222-2222-2222-2222-222222222222"))
+        mockMvc.perform(get("/stores/nearby").param("lat", "4.6762").param("lng", "-74.0481").param("categoriaId", "22222222-2222-2222-2222-222222222222"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].categoriaId").value("22222222-2222-2222-2222-222222222222"))
                 .andExpect(jsonPath("$[0].nombre").value("Calle 85 Store"));
@@ -70,7 +70,7 @@ class GeolocalizacionIntegrationTest {
 
     @Test
     void calculaLaDistanciaAUnAlmacen() throws Exception {
-        mockMvc.perform(get("/almacenes/a1111111-1111-1111-1111-111111111111/distancia")
+        mockMvc.perform(get("/stores/a1111111-1111-1111-1111-111111111111/distance")
                         .param("lat", "4.676200").param("lng", "-74.048100"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.kilometros").value(0.0));
@@ -78,20 +78,20 @@ class GeolocalizacionIntegrationTest {
 
     @Test
     void responde404SiElAlmacenNoExiste() throws Exception {
-        mockMvc.perform(get("/almacenes/00000000-0000-0000-0000-000000000000/distancia")
+        mockMvc.perform(get("/stores/00000000-0000-0000-0000-000000000000/distance")
                         .param("lat", "4.6").param("lng", "-74.0"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void responde400SiFaltaLaLatitud() throws Exception {
-        mockMvc.perform(get("/fundaciones/cercanas").param("lng", "-74.0"))
+        mockMvc.perform(get("/foundations/nearby").param("lng", "-74.0"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void listaLasFundacionesCercanas() throws Exception {
-        mockMvc.perform(get("/fundaciones/cercanas").param("lat", "4.782700").param("lng", "-74.042700"))
+        mockMvc.perform(get("/foundations/nearby").param("lat", "4.782700").param("lng", "-74.042700"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nombre").value("Fundación Abrigo Norte"))
                 .andExpect(jsonPath("$[0].distanciaKm").isNumber());
@@ -106,7 +106,7 @@ class GeolocalizacionIntegrationTest {
         int estado = 404;
         for (int i = 0; i < 50 && estado != 200; i++) {
             Thread.sleep(100);
-            estado = mockMvc.perform(get("/almacenes/" + id + "/distancia").param("lat", "6.2442").param("lng", "-75.5812"))
+            estado = mockMvc.perform(get("/stores/" + id + "/distance").param("lat", "6.2442").param("lng", "-75.5812"))
                     .andReturn().getResponse().getStatus();
         }
 
@@ -122,7 +122,7 @@ class GeolocalizacionIntegrationTest {
         String body = "[]";
         for (int i = 0; i < 50 && !body.contains("Ropero"); i++) {
             Thread.sleep(100);
-            body = mockMvc.perform(get("/fundaciones/cercanas").param("lat", "6.2442").param("lng", "-75.5812"))
+            body = mockMvc.perform(get("/foundations/nearby").param("lat", "6.2442").param("lng", "-75.5812"))
                     .andReturn().getResponse().getContentAsString();
         }
 
@@ -139,19 +139,19 @@ class GeolocalizacionIntegrationTest {
 
     @Test
     void existenLasCategoriasDelAnalisis() throws Exception {
-        mockMvc.perform(get("/almacenes").param("lat", "4.6762").param("lng", "-74.0481").param("categoriaId", "66666666-6666-6666-6666-666666666666"))
+        mockMvc.perform(get("/stores/nearby").param("lat", "4.6762").param("lng", "-74.0481").param("categoriaId", "66666666-6666-6666-6666-666666666666"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void responde400SiLaUbicacionOElRadioNoSonValidos() throws Exception {
-        mockMvc.perform(get("/almacenes"))
+        mockMvc.perform(get("/stores/nearby"))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/almacenes").param("lng", "-74.0"))
+        mockMvc.perform(get("/stores/nearby").param("lng", "-74.0"))
                 .andExpect(status().isBadRequest());
-        mockMvc.perform(get("/almacenes").param("lat", "95").param("lng", "-74.0"))
+        mockMvc.perform(get("/stores/nearby").param("lat", "95").param("lng", "-74.0"))
                 .andExpect(status().isBadRequest());
-        mockMvc.perform(get("/almacenes").param("lat", "4.6").param("lng", "-74.0").param("radioKm", "25"))
+        mockMvc.perform(get("/stores/nearby").param("lat", "4.6").param("lng", "-74.0").param("radioKm", "25"))
                 .andExpect(status().isBadRequest());
     }
 }

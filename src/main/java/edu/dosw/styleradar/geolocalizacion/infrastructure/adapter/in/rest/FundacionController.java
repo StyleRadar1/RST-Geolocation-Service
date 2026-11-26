@@ -8,14 +8,12 @@ import edu.dosw.styleradar.geolocalizacion.domain.port.in.ConsultarFundacionesCe
 import edu.dosw.styleradar.geolocalizacion.infrastructure.adapter.in.rest.doc.FundacionApi;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/fundaciones")
 public class FundacionController implements FundacionApi {
 
     private final ConsultarFundacionesCercanasUseCase consultarFundaciones;
@@ -25,11 +23,14 @@ public class FundacionController implements FundacionApi {
     }
 
     @Override
-    @GetMapping("/cercanas")
-    public ResponseEntity<List<FundacionResponse>> cercanas(@RequestParam double lat,
-                                                            @RequestParam double lng,
+    @GetMapping("/foundations/nearby")
+    public ResponseEntity<List<FundacionResponse>> cercanas(@RequestParam(required = false) Double lat,
+                                                            @RequestParam(required = false) Double lng,
+                                                            @RequestParam(required = false) Double latitud,
+                                                            @RequestParam(required = false) Double longitud,
+                                                            @RequestParam(required = false) Double lon,
                                                             @RequestParam(defaultValue = "5") double radioKm) {
-        Ubicacion usuario = new Ubicacion(lat, lng);
+        Ubicacion usuario = CoordenadasRequest.resolverObligatoria(lat, latitud, lng, longitud, lon);
         return ResponseEntity.ok(consultarFundaciones.consultar(usuario, new Distancia(radioKm)).stream()
                 .map(fundacion -> FundacionMapperIn.toResponse(fundacion, usuario))
                 .toList());

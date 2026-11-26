@@ -16,7 +16,7 @@ public final class AlmacenMapperOut {
     public static Almacen toDomain(AlmacenEntity entity) {
         CategoriaAlmacen categoria = new CategoriaAlmacen(entity.getCategoria().getId(), entity.getCategoria().getNombre());
         Ubicacion ubicacion = new Ubicacion(entity.getLatitud().doubleValue(), entity.getLongitud().doubleValue());
-        return new Almacen(entity.getId(), entity.getNombre(), categoria, ubicacion);
+        return new Almacen(entity.getId(), entity.getNombre(), categoria, ubicacion, entity.getNit());
     }
 
     public static CategoriaAlmacenEntity toEntity(CategoriaAlmacen categoria) {
@@ -25,6 +25,7 @@ public final class AlmacenMapperOut {
 
     public static AlmacenEntity toEntity(Almacen almacen) {
         return new AlmacenEntity(almacen.id(), toEntity(almacen.categoria()), almacen.nombre(),
-                BigDecimal.valueOf(almacen.ubicacion().latitud()), BigDecimal.valueOf(almacen.ubicacion().longitud()));
+                BigDecimal.valueOf(almacen.ubicacion().latitud()), BigDecimal.valueOf(almacen.ubicacion().longitud()),
+                almacen.nit());
     }
 }

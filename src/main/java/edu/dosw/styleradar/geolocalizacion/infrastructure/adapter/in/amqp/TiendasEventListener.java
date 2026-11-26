@@ -25,8 +25,11 @@ public class TiendasEventListener {
     @RabbitListener(queues = "${styleradar.rabbitmq.queues.almacenes}")
     public void onAlmacen(Map<String, Object> payload) {
         try {
-            sincronizar.guardarAlmacen(leerUuid(payload, "almacenId", "tiendaId", "id"), leerTexto(payload, "nombre"),
-                    leerCategoria(payload), leerUbicacion(payload));
+            String nit = leerTexto(payload, "nit");
+            UUID id = leerUuid(payload, "almacenId", "tiendaId", "id");
+            sincronizar.guardarAlmacen(id != null ? id : IdTiendas.almacen(nit), nit,
+                    leerTexto(payload, "nombre", "name", "nombreComercial", "tradeName"), leerCategoria(payload),
+                    leerUbicacion(payload));
         } catch (DomainException e) {
             throw new AmqpRejectAndDontRequeueException("Evento de almacén inválido: " + e.getMessage());
         }
@@ -35,7 +38,7 @@ public class TiendasEventListener {
     @RabbitListener(queues = "${styleradar.rabbitmq.queues.fundaciones}")
     public void onFundacion(Map<String, Object> payload) {
         try {
-            sincronizar.guardarFundacion(leerUuid(payload, "fundacionId", "id"), leerTexto(payload, "nombre"),
+            sincronizar.guardarFundacion(leerUuid(payload, "fundacionId", "id"), leerTexto(payload, "nombre", "name"),
                     leerUbicacion(payload));
         } catch (DomainException e) {
             throw new AmqpRejectAndDontRequeueException("Evento de fundación inválido: " + e.getMessage());
@@ -89,8 +92,8 @@ public class TiendasEventListener {
     }
 
     static Ubicacion leerUbicacion(Map<String, Object> payload) {
-        Double latitud = leerNumero(payload, "latitud", "lat");
-        Double longitud = leerNumero(payload, "longitud", "lng");
+        Double latitud = leerNumero(payload, "latitud", "lat", "latitude");
+        Double longitud = leerNumero(payload, "longitud", "lng", "longitude", "lon");
         if (latitud == null || longitud == null) {
             throw new DomainException("El evento no trae una latitud y longitud válidas", "EVENTO_INVALIDO");
         }
